@@ -1,3 +1,4 @@
+
 # Python
 __pycache__/
 *.py[cod]
@@ -20,8 +21,13 @@ data/processed/*
 
 # Résultats générés
 outputs/figures/*
+!outputs/figures/.gitkeep
+
 outputs/models/*
+!outputs/models/.gitkeep
+
 outputs/results/*
+!outputs/results/.gitkeep
 
 # Fichiers temporaires
 *.log
