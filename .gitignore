@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Environnements virtuels
+.venv/
+venv/
+env/
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Données générées
+data/processed/*
+!data/processed/.gitkeep
+
+# Résultats générés
+outputs/figures/*
+outputs/models/*
+outputs/results/*
+
+# Fichiers temporaires
+*.log
