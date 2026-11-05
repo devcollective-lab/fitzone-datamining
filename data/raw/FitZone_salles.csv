@@ -1,0 +1,15 @@
+salle,ville,surface_m2,ouverte_depuis_mois,nb_coachs,parking
+S01,Créteil,2276,54,11,oui
+S02,Paris 11,2336,64,4,oui
+S03,Asnières,1160,114,11,non
+S04,Levallois,2059,65,11,oui
+S05,Vincennes,1617,112,11,oui
+S06,Rueil,1707,9,6,oui
+S07,Paris 15,1117,92,3,non
+S08,Issy,1773,81,11,non
+S09,Montreuil,2083,108,4,oui
+S10,Boulogne,692,110,12,oui
+S11,Clichy,1964,36,3,oui
+S12,Saint-Denis,856,43,12,non
+S13,Ivry,729,107,9,non
+S14,Nanterre,2350,76,5,non
