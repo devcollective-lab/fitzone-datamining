@@ -143,3 +143,38 @@ fusion["tranche_distance"] = pd.cut(fusion["distance_domicile_m"],
 print("\nTaux de résiliation par distance en mètres (%) :")
 print((fusion.groupby("tranche_distance", observed=True)["cible"].mean() * 100).round(1))
  
+
+
+ 
+# ------------------------------------------------------------
+# 9. Examen des lignes douteuses (préparation du nettoyage)
+# ------------------------------------------------------------
+print("\n===== 9. LIGNES DOUTEUSES =====")
+
+# Les abonnés dont l'ancienneté est négative
+print("Anciennetés négatives :")
+print(abonnes[abonnes["anciennete_mois"] < 0])
+
+# La plus petite ancienneté réelle du fichier
+print("\nAnciennetés les plus petites :")
+print(abonnes["anciennete_mois"].value_counts().sort_index().head(4))
+
+# Les abonnés dont le prix vaut 0
+print("\nPrix à 0 € :")
+print(abonnes[abonnes["prix_mensuel_eur"] == 0])
+
+# Le prix habituel de chaque formule (médiane = la valeur du milieu)
+print("\nPrix médian par formule :")
+print(abonnes.groupby("formule")["prix_mensuel_eur"].median())
+
+# Les abonnés sans créneau partent-ils plus que les autres ?
+sans_creneau = abonnes[abonnes["creneau_habituel"].isnull()]
+print("\nTaux de départ sans créneau :", round(sans_creneau["cible"].mean() * 100, 1), "%")
+
+# Le coaching dépend-il de la formule ?
+print("\nSéances de coaching médianes par formule :")
+print(abonnes.groupby("formule")["seances_coaching"].median())
+
+# Unités : la distance va de combien à combien ?
+print("\nDistance (mètres) : min =", abonnes["distance_domicile_m"].min(),
+      "/ max =", abonnes["distance_domicile_m"].max())
