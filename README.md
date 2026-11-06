@@ -62,7 +62,7 @@ fitzone-datamining/
 │   ├── __init__.py
 │   ├── data_loader.py        # Chargement des données
 │   ├── preprocessing.py      # Nettoyage et préparation
-│   ├── exploration.py        # Analyse exploratoire
+│   ├── exploration.py        # Structure, anomalies, types et unités
 │   ├── classification.py     # Classification
 │   ├── regression.py         # Régression
 │   ├── clustering.py         # Segmentation
@@ -72,7 +72,7 @@ fitzone-datamining/
 │   ├── figures/              # Graphiques
 │   ├── models/               # Modèles entraînés
 │   └── results/              # Résultats
-├── docs/                     # Documentation et présentation
+├── docs/                     # Documentation du projet
 ├── main.py                   # Point d'entrée
 ├── requirements.txt          # Dépendances
 ├── .gitignore
@@ -80,6 +80,8 @@ fitzone-datamining/
 ```
 
 Les différents scripts et dossiers seront complétés progressivement.
+
+La documentation détaillée des explorations, des traitements et des résultats sera placée dans `docs/`.
 
 ## 5. Installation et configuration
 
@@ -169,6 +171,16 @@ Les fichiers originaux doivent être conservés sans modification.
 
 Les données nettoyées ou transformées seront enregistrées séparément dans `data/processed/`.
 
+### 5.6. Exécuter le projet
+
+Une fois les dépendances installées et les fichiers CSV placés dans `data/raw/`, lancer le programme depuis la racine du projet :
+
+```bash
+python main.py
+```
+
+Le programme charge les deux jeux de données et affiche les résultats des vérifications réalisées pendant l'exploration.
+
 ## 6. Méthodologie
 
 Le projet est organisé en cinq phases :
@@ -183,17 +195,31 @@ Le projet est organisé en cinq phases :
 
 ### Phase actuelle : Exploration et préparation des données
 
-Cette première phase consiste à :
+La première phase est en cours.
 
-- Examiner la structure des deux jeux de données.
-- Identifier les valeurs manquantes et les doublons.
-- Repérer les valeurs incohérentes ou impossibles.
-- Vérifier les types de données et les unités.
-- Étudier les premières distributions et relations entre variables.
-- Proposer des traitements de nettoyage justifiés.
-- Préparer des données exploitables pour les analyses suivantes.
+**Travail réalisé :**
 
-Les données originales sont conservées afin de garantir la traçabilité des transformations.
+- Examen de la structure des deux jeux de données.
+- Identification des valeurs manquantes et des doublons.
+- Recherche des valeurs incohérentes ou suspectes.
+- Vérification des types de données et des unités.
+- Contrôle de la correspondance des salles entre les deux fichiers.
+
+Ces vérifications sont regroupées dans `src/exploration.py`, avec trois fonctions principales :
+
+- `explorer_structure()` : examine les dimensions, les colonnes et les informations générales des données.
+- `verifier_anomalies()` : recherche les valeurs manquantes, les doublons et les incohérences.
+- `verifier_types_unites()` : vérifie les types de données et la cohérence des unités.
+
+Le script `main.py` permet de lancer l'exploration à partir des données chargées par `src/data_loader.py`.
+
+**Étapes restantes :**
+
+- Définir et appliquer les traitements de nettoyage.
+- Préparer les données pour les analyses suivantes.
+- Documenter les choix de préparation et leurs résultats.
+
+Les fichiers CSV originaux sont conservés sans modification afin de garantir la traçabilité des transformations.
 
 ## 7. Organisation du travail et collaboration
 
