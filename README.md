@@ -15,7 +15,7 @@ L'étude repose sur deux fichiers CSV :
 - `FitZone_abonnes.csv` : caractéristiques des abonnés, abonnements, habitudes de fréquentation et résiliations.
 - `FitZone_salles.csv` : caractéristiques des salles de sport.
 
-Ces données nécessitent une phase de vérification et de préparation avant toute analyse approfondie.
+Ces données font l'objet d'une phase d'exploration et de préparation avant les analyses approfondies.
 
 ## 2. Objectifs
 
@@ -72,7 +72,8 @@ fitzone-datamining/
 │   ├── figures/              # Graphiques
 │   ├── models/               # Modèles entraînés
 │   └── results/              # Résultats
-├── docs/                     # Documentation du projet
+├── docs/
+│   └── phase1_exploration_preprocessing.md
 ├── main.py                   # Point d'entrée
 ├── requirements.txt          # Dépendances
 ├── .gitignore
@@ -81,7 +82,7 @@ fitzone-datamining/
 
 Les différents scripts et dossiers seront complétés progressivement.
 
-La documentation détaillée des explorations, des traitements et des résultats sera placée dans `docs/`.
+La documentation détaillée des traitements et des résultats est placée dans `docs/`.
 
 ## 5. Installation et configuration
 
@@ -167,9 +168,15 @@ data/raw/
 └── FitZone_salles.csv
 ```
 
-Les fichiers originaux doivent être conservés sans modification.
+Les fichiers originaux sont conservés sans modification.
 
-Les données nettoyées ou transformées seront enregistrées séparément dans `data/processed/`.
+Après exécution du programme, les données préparées sont enregistrées automatiquement dans `data/processed/` :
+
+```text
+data/processed/
+├── FitZone_abonnes_clean.csv
+└── FitZone_salles_clean.csv
+```
 
 ### 5.6. Exécuter le projet
 
@@ -179,7 +186,9 @@ Une fois les dépendances installées et les fichiers CSV placés dans `data/raw
 python main.py
 ```
 
-Le programme charge les deux jeux de données et affiche les résultats des vérifications réalisées pendant l'exploration.
+Le programme charge les données, exécute les vérifications d'exploration, applique les traitements de nettoyage et enregistre les fichiers préparés.
+
+Les résultats sont affichés dans le terminal.
 
 ## 6. Méthodologie
 
@@ -193,41 +202,42 @@ Le projet est organisé en cinq phases :
 | 4 | Segmentation des abonnés et détection des anomalies |
 | 5 | Synthèse des résultats, documentation et présentation |
 
-### Phase actuelle : Exploration et préparation des données
+### Phase 1 — Exploration et préparation des données
 
-La première phase est en cours.
+La phase 1 est terminée sur la branche `Tresor_Bch`, en attente de validation collective avant son intégration dans `main`.
 
 **Travail réalisé :**
 
-- Examen de la structure des deux jeux de données.
-- Identification des valeurs manquantes et des doublons.
-- Recherche des valeurs incohérentes ou suspectes.
+- Exploration de la structure des deux jeux de données.
+- Identification des valeurs manquantes, doublons et incohérences.
 - Vérification des types de données et des unités.
 - Contrôle de la correspondance des salles entre les deux fichiers.
+- Suppression des doublons et traitement des valeurs manquantes.
+- Correction des anciennetés négatives et des prix mensuels nuls.
+- Vérification finale et sauvegarde des données nettoyées.
 
-Ces vérifications sont regroupées dans `src/exploration.py`, avec trois fonctions principales :
+Après nettoyage, le fichier des abonnés contient **800 lignes et 11 colonnes**, sans doublons ni valeurs manquantes.
 
-- `explorer_structure()` : examine les dimensions, les colonnes et les informations générales des données.
-- `verifier_anomalies()` : recherche les valeurs manquantes, les doublons et les incohérences.
-- `verifier_types_unites()` : vérifie les types de données et la cohérence des unités.
+Le fichier des salles contient **14 lignes et 6 colonnes** et n'a nécessité aucune correction.
 
-Le script `main.py` permet de lancer l'exploration à partir des données chargées par `src/data_loader.py`.
+**Organisation du code :**
 
-**Étapes restantes :**
+- `src/data_loader.py` : chargement des données.
+- `src/exploration.py` : exploration et recherche des anomalies.
+- `src/preprocessing.py` : nettoyage et préparation des données.
+- `main.py` : exécution des étapes et sauvegarde des résultats.
 
-- Définir et appliquer les traitements de nettoyage.
-- Préparer les données pour les analyses suivantes.
-- Documenter les choix de préparation et leurs résultats.
+Les choix de traitement et les résultats sont détaillés dans [la documentation de la phase 1](docs/phase1_exploration_preprocessing.md).
 
-Les fichiers CSV originaux sont conservés sans modification afin de garantir la traçabilité des transformations.
+**Prochaine étape :** validation collective des contributions, puis poursuite des analyses de Data Mining.
 
 ## 7. Organisation du travail et collaboration
 
 Le projet est réalisé en groupe de cinq membres.
 
-Pendant la première phase, chaque membre travaille indépendamment sur sa propre branche afin d'explorer les données et de proposer une méthode de préparation.
+Chaque membre travaille sur sa propre branche afin de développer et de tester ses contributions.
 
-Les résultats et les approches seront ensuite comparés collectivement. Les solutions retenues seront intégrées progressivement à la branche principale.
+Les résultats et les approches sont ensuite comparés collectivement. Les solutions retenues sont intégrées progressivement à la branche principale.
 
 ### Gestion des branches
 
