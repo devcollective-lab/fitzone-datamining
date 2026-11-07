@@ -243,3 +243,15 @@ Les livrables du projet comprennent :
 - La documentation et la présentation PDF.
 
 Le dépôt sera enrichi progressivement au fil de l'avancement du projet.
+ 
+
+
+
+ ## Suivi de l'avancement
+
+ Exploration, Nettoyage et Préparation (Terminée)
+- **Anomalies traitées** : 
+  - Suppression des doublons stricts.
+  - Suppression des lignes comportant des anciennetés négatives (erreurs de saisie).
+  - Imputation des prix à 0 € par la médiane de la formule d'abonnement correspondante.
+- **Sortie** : Fichier `data/processed/FitZone_abonnes_propre.csv` généré et prêt pour la Phase 2.
