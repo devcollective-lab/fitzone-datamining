@@ -160,7 +160,7 @@ python -c "import pandas, numpy, sklearn; print('Environnement FitZone OK')"
 
 ### 5.5. Préparer les données
 
-Les deux fichiers CSV du sujet doivent être placés dans `data/raw/` :
+Les deux fichiers CSV d'origine sont disponibles dans `data/raw/` après le clonage du dépôt :
 
 ```text
 data/raw/
@@ -180,7 +180,7 @@ data/processed/
 
 ### 5.6. Exécuter le projet
 
-Une fois les dépendances installées et les fichiers CSV placés dans `data/raw/`, lancer le programme depuis la racine du projet :
+Une fois les dépendances installées, lancer le programme depuis la racine du projet :
 
 ```bash
 python main.py
@@ -204,7 +204,9 @@ Le projet est organisé en cinq phases :
 
 ### Phase 1 — Exploration et préparation des données
 
-La phase 1 est terminée sur la branche `Tresor_Bch`, en attente de validation collective avant son intégration dans `main`.
+La phase 1 est terminée et ses développements ont été intégrés à la branche principale `main`.
+
+Les traitements d'exploration, de nettoyage et de préparation des données sont opérationnels. Les résultats sont documentés et les fichiers nettoyés sont générés automatiquement lors de l'exécution du programme.
 
 **Travail réalisé :**
 
@@ -229,7 +231,7 @@ Le fichier des salles contient **14 lignes et 6 colonnes** et n'a nécessité au
 
 Les choix de traitement et les résultats sont détaillés dans [la documentation de la phase 1](docs/phase1_exploration_preprocessing.md).
 
-**Prochaine étape :** validation collective des contributions, puis poursuite des analyses de Data Mining.
+**Prochaine étape :** poursuite du projet avec la phase 2, consacrée à l'analyse des résiliations et à la prédiction de la fréquentation des abonnés.
 
 ## 7. Organisation du travail et collaboration
 
