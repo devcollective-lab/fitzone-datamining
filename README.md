@@ -231,7 +231,7 @@ Le fichier des salles contient **14 lignes et 6 colonnes** et n'a nécessité au
 - `src/preprocessing.py` : nettoyage et préparation des données.
 - `main.py` : exécution des étapes et sauvegarde des résultats.
 
-Les choix de traitement et les résultats sont détaillés dans [la documentation de la phase 1](docs/phase1_exploration_preprocessing.md).
+Les choix de traitement et les résultats sont détaillés dans [la documentation de la phase 1](docs/phas1_doc.md).
 
 ### Phase 2 — Analyse des résiliations et prédiction de la fréquentation
 
