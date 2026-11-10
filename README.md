@@ -15,7 +15,7 @@ L'étude repose sur deux fichiers CSV :
 - `FitZone_abonnes.csv` : caractéristiques des abonnés, abonnements, habitudes de fréquentation et résiliations.
 - `FitZone_salles.csv` : caractéristiques des salles de sport.
 
-Ces données nécessitent une phase de vérification et de préparation avant toute analyse approfondie.
+Ces données ont fait l'objet d'une phase d'exploration et de préparation avant les analyses approfondies.
 
 ## 2. Objectifs
 
@@ -62,7 +62,7 @@ fitzone-datamining/
 │   ├── __init__.py
 │   ├── data_loader.py        # Chargement des données
 │   ├── preprocessing.py      # Nettoyage et préparation
-│   ├── exploration.py        # Analyse exploratoire
+│   ├── exploration.py        # Structure, anomalies, types et unités
 │   ├── classification.py     # Classification
 │   ├── regression.py         # Régression
 │   ├── clustering.py         # Segmentation
@@ -72,7 +72,8 @@ fitzone-datamining/
 │   ├── figures/              # Graphiques
 │   ├── models/               # Modèles entraînés
 │   └── results/              # Résultats
-├── docs/                     # Documentation et présentation
+├── docs/
+│   └── phase1_exploration_preprocessing.md
 ├── main.py                   # Point d'entrée
 ├── requirements.txt          # Dépendances
 ├── .gitignore
@@ -80,6 +81,8 @@ fitzone-datamining/
 ```
 
 Les différents scripts et dossiers seront complétés progressivement.
+
+La documentation détaillée des traitements et des résultats est placée dans `docs/`.
 
 ## 5. Installation et configuration
 
@@ -157,7 +160,7 @@ python -c "import pandas, numpy, sklearn; print('Environnement FitZone OK')"
 
 ### 5.5. Préparer les données
 
-Les deux fichiers CSV du sujet doivent être placés dans `data/raw/` :
+Les deux fichiers CSV d'origine sont disponibles dans `data/raw/` après le clonage du dépôt :
 
 ```text
 data/raw/
@@ -165,43 +168,115 @@ data/raw/
 └── FitZone_salles.csv
 ```
 
-Les fichiers originaux doivent être conservés sans modification.
+Les fichiers originaux sont conservés sans modification.
 
-Les données nettoyées ou transformées seront enregistrées séparément dans `data/processed/`.
+Après exécution du programme, les données préparées sont enregistrées automatiquement dans `data/processed/` :
+
+```text
+data/processed/
+├── FitZone_abonnes_clean.csv
+└── FitZone_salles_clean.csv
+```
+
+### 5.6. Exécuter le projet
+
+Une fois les dépendances installées, lancer le programme depuis la racine du projet :
+
+```bash
+python main.py
+```
+
+Le programme charge les données, exécute les vérifications d'exploration, applique les traitements de nettoyage et enregistre les fichiers préparés.
+
+Les résultats sont affichés dans le terminal.
 
 ## 6. Méthodologie
 
 Le projet est organisé en cinq phases :
 
-| Phase | Description |
-|---|---|
-| 1 | Exploration, vérification, nettoyage et préparation des données |
-| 2 | Analyse des résiliations et prédiction de la fréquentation |
-| 3 | Fidélisation et priorisation des appels |
-| 4 | Segmentation des abonnés et détection des anomalies |
-| 5 | Synthèse des résultats, documentation et présentation |
+| Phase | Description | Statut |
+|---|---|---|
+| 1 | Exploration, vérification, nettoyage et préparation des données | Terminée et validée |
+| 2 | Analyse des résiliations et prédiction de la fréquentation | En préparation |
+| 3 | Fidélisation et priorisation des appels | À venir |
+| 4 | Segmentation des abonnés et détection des anomalies | À venir |
+| 5 | Synthèse des résultats, documentation et présentation | À venir |
 
-### Phase actuelle : Exploration et préparation des données
+### Phase 1 — Exploration et préparation des données
 
-Cette première phase consiste à :
+**Statut : terminée et validée.**
 
-- Examiner la structure des deux jeux de données.
-- Identifier les valeurs manquantes et les doublons.
-- Repérer les valeurs incohérentes ou impossibles.
-- Vérifier les types de données et les unités.
-- Étudier les premières distributions et relations entre variables.
-- Proposer des traitements de nettoyage justifiés.
-- Préparer des données exploitables pour les analyses suivantes.
+La phase 1 est terminée et ses développements ont été intégrés à la branche principale `main`.
 
-Les données originales sont conservées afin de garantir la traçabilité des transformations.
+Les traitements d'exploration, de nettoyage et de préparation des données sont opérationnels. Les résultats sont documentés et les fichiers nettoyés sont générés automatiquement lors de l'exécution du programme.
+
+**Travail réalisé :**
+
+- Exploration de la structure des deux jeux de données.
+- Identification des valeurs manquantes, doublons et incohérences.
+- Vérification des types de données et des unités.
+- Contrôle de la correspondance des salles entre les deux fichiers.
+- Suppression des doublons et traitement des valeurs manquantes.
+- Correction des anciennetés négatives et des prix mensuels nuls.
+- Vérification finale et sauvegarde des données nettoyées.
+
+Après nettoyage, le fichier des abonnés contient **800 lignes et 11 colonnes**, sans doublons ni valeurs manquantes.
+
+Le fichier des salles contient **14 lignes et 6 colonnes** et n'a nécessité aucune correction.
+
+**Organisation du code :**
+
+- `src/data_loader.py` : chargement des données.
+- `src/exploration.py` : exploration et recherche des anomalies.
+- `src/preprocessing.py` : nettoyage et préparation des données.
+- `main.py` : exécution des étapes et sauvegarde des résultats.
+
+Les choix de traitement et les résultats sont détaillés dans [la documentation de la phase 1](docs/phase1_exploration_preprocessing.md).
+
+### Phase 2 — Analyse des résiliations et prédiction de la fréquentation
+
+**Statut : en préparation.**
+
+Cette phase vise à analyser les facteurs associés aux résiliations et à développer des modèles de Machine Learning permettant de prédire la fréquentation mensuelle des abonnés.
+
+**Travail prévu :**
+
+- Étudier la répartition des résiliations et les caractéristiques des abonnés concernés.
+- Analyser l'influence de la distance entre le domicile et la salle sur les résiliations.
+- Identifier les variables susceptibles d'influencer la fréquentation mensuelle.
+- Préparer les données nécessaires à la modélisation.
+- Entraîner et comparer des modèles de régression.
+- Évaluer les performances des modèles et interpréter les résultats.
+- Documenter les analyses et les choix méthodologiques.
+
+Les développements seront réalisés progressivement sur les branches de travail avant leur validation et leur intégration dans `main`.
+
+### Phase 3 — Fidélisation et priorisation des appels
+
+**Statut : à venir.**
+
+Cette phase sera consacrée à l'identification des abonnés à contacter en priorité dans le cadre des campagnes de fidélisation.
+
+**Travail prévu :**
+
+- Identifier les abonnés présentant un risque de résiliation.
+- Définir des critères de priorisation des appels.
+- Étudier l'intérêt d'augmenter les moyens consacrés aux campagnes de fidélisation.
+- Évaluer les résultats obtenus afin de proposer des actions adaptées.
+
+### Objectif de la semaine
+
+L'objectif collectif est de finaliser et de valider les phases 2 et 3 d'ici le **dimanche 15 novembre 2026**.
+
+Les analyses, les développements et les résultats devront être vérifiés et documentés avant leur intégration dans la branche principale.
 
 ## 7. Organisation du travail et collaboration
 
 Le projet est réalisé en groupe de cinq membres.
 
-Pendant la première phase, chaque membre travaille indépendamment sur sa propre branche afin d'explorer les données et de proposer une méthode de préparation.
+Chaque membre travaille sur sa propre branche afin de développer et de tester ses contributions.
 
-Les résultats et les approches seront ensuite comparés collectivement. Les solutions retenues seront intégrées progressivement à la branche principale.
+Les résultats et les approches sont ensuite comparés collectivement. Les solutions retenues sont intégrées progressivement à la branche principale.
 
 ### Gestion des branches
 
