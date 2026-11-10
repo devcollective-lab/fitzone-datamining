@@ -50,26 +50,19 @@ def traiter_creneau_manquant(abonnes):
     return abonnes
 
 
-# Corriger les anciennetés négatives avec la médiane des abonnés Essentiel
+# Supprimer les abonnés avec une ancienneté négative
 def corriger_anciennetes(abonnes):
-    print("\n--- Correction des anciennetés négatives ---")
+    print("\n--- Suppression des anciennetés négatives ---")
 
-    nb_avant = (abonnes["anciennete_mois"] < 0).sum()
+    nb_avant = len(abonnes)
 
-    essentiel = abonnes[abonnes["formule"] == "Essentiel"]
-    anciennetes_valides = essentiel[essentiel["anciennete_mois"] >= 0]
+    abonnes = abonnes[abonnes["anciennete_mois"] >= 0].copy()
 
-    mediane = anciennetes_valides["anciennete_mois"].median()
+    nb_apres = len(abonnes)
 
-    abonnes.loc[
-        abonnes["anciennete_mois"] < 0,
-        "anciennete_mois"
-    ] = mediane
-
-    nb_apres = (abonnes["anciennete_mois"] < 0).sum()
-
-    print("Anciennetés négatives avant :", nb_avant)
-    print("Anciennetés négatives après :", nb_apres)
+    print("Nombre de lignes avant :", nb_avant)
+    print("Nombre de lignes après :", nb_apres)
+    print("Abonnés supprimés :", nb_avant - nb_apres)
 
     return abonnes
 
