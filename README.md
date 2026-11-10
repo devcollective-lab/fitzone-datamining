@@ -15,7 +15,7 @@ L'étude repose sur deux fichiers CSV :
 - `FitZone_abonnes.csv` : caractéristiques des abonnés, abonnements, habitudes de fréquentation et résiliations.
 - `FitZone_salles.csv` : caractéristiques des salles de sport.
 
-Ces données font l'objet d'une phase d'exploration et de préparation avant les analyses approfondies.
+Ces données ont fait l'objet d'une phase d'exploration et de préparation avant les analyses approfondies.
 
 ## 2. Objectifs
 
@@ -160,7 +160,7 @@ python -c "import pandas, numpy, sklearn; print('Environnement FitZone OK')"
 
 ### 5.5. Préparer les données
 
-Les deux fichiers CSV du sujet doivent être placés dans `data/raw/` :
+Les deux fichiers CSV d'origine sont disponibles dans `data/raw/` après le clonage du dépôt :
 
 ```text
 data/raw/
@@ -180,7 +180,7 @@ data/processed/
 
 ### 5.6. Exécuter le projet
 
-Une fois les dépendances installées et les fichiers CSV placés dans `data/raw/`, lancer le programme depuis la racine du projet :
+Une fois les dépendances installées, lancer le programme depuis la racine du projet :
 
 ```bash
 python main.py
@@ -194,17 +194,21 @@ Les résultats sont affichés dans le terminal.
 
 Le projet est organisé en cinq phases :
 
-| Phase | Description |
-|---|---|
-| 1 | Exploration, vérification, nettoyage et préparation des données |
-| 2 | Analyse des résiliations et prédiction de la fréquentation |
-| 3 | Fidélisation et priorisation des appels |
-| 4 | Segmentation des abonnés et détection des anomalies |
-| 5 | Synthèse des résultats, documentation et présentation |
+| Phase | Description | Statut |
+|---|---|---|
+| 1 | Exploration, vérification, nettoyage et préparation des données | Terminée et validée |
+| 2 | Analyse des résiliations et prédiction de la fréquentation | En préparation |
+| 3 | Fidélisation et priorisation des appels | À venir |
+| 4 | Segmentation des abonnés et détection des anomalies | À venir |
+| 5 | Synthèse des résultats, documentation et présentation | À venir |
 
 ### Phase 1 — Exploration et préparation des données
 
-La phase 1 est terminée sur la branche `Tresor_Bch`, en attente de validation collective avant son intégration dans `main`.
+**Statut : terminée et validée.**
+
+La phase 1 est terminée et ses développements ont été intégrés à la branche principale `main`.
+
+Les traitements d'exploration, de nettoyage et de préparation des données sont opérationnels. Les résultats sont documentés et les fichiers nettoyés sont générés automatiquement lors de l'exécution du programme.
 
 **Travail réalisé :**
 
@@ -213,10 +217,10 @@ La phase 1 est terminée sur la branche `Tresor_Bch`, en attente de validation c
 - Vérification des types de données et des unités.
 - Contrôle de la correspondance des salles entre les deux fichiers.
 - Suppression des doublons et traitement des valeurs manquantes.
-- Correction des anciennetés négatives et des prix mensuels nuls.
+- Suppression des abonnés présentant une ancienneté négative et correction des prix mensuels nuls.
 - Vérification finale et sauvegarde des données nettoyées.
 
-Après nettoyage, le fichier des abonnés contient **800 lignes et 11 colonnes**, sans doublons ni valeurs manquantes.
+Après nettoyage, le fichier des abonnés contient **797 lignes et 11 colonnes**, sans doublons, sans valeurs manquantes, sans anciennetés négatives et sans prix mensuels nuls.
 
 Le fichier des salles contient **14 lignes et 6 colonnes** et n'a nécessité aucune correction.
 
@@ -229,7 +233,42 @@ Le fichier des salles contient **14 lignes et 6 colonnes** et n'a nécessité au
 
 Les choix de traitement et les résultats sont détaillés dans [la documentation de la phase 1](docs/phase1_exploration_preprocessing.md).
 
-**Prochaine étape :** validation collective des contributions, puis poursuite des analyses de Data Mining.
+### Phase 2 — Analyse des résiliations et prédiction de la fréquentation
+
+**Statut : en préparation.**
+
+Cette phase vise à analyser les facteurs associés aux résiliations et à développer des modèles de Machine Learning permettant de prédire la fréquentation mensuelle des abonnés.
+
+**Travail prévu :**
+
+- Étudier la répartition des résiliations et les caractéristiques des abonnés concernés.
+- Analyser l'influence de la distance entre le domicile et la salle sur les résiliations.
+- Identifier les variables susceptibles d'influencer la fréquentation mensuelle.
+- Préparer les données nécessaires à la modélisation.
+- Entraîner et comparer des modèles de régression.
+- Évaluer les performances des modèles et interpréter les résultats.
+- Documenter les analyses et les choix méthodologiques.
+
+Les développements seront réalisés progressivement sur les branches de travail avant leur validation et leur intégration dans `main`.
+
+### Phase 3 — Fidélisation et priorisation des appels
+
+**Statut : à venir.**
+
+Cette phase sera consacrée à l'identification des abonnés à contacter en priorité dans le cadre des campagnes de fidélisation.
+
+**Travail prévu :**
+
+- Identifier les abonnés présentant un risque de résiliation.
+- Définir des critères de priorisation des appels.
+- Étudier l'intérêt d'augmenter les moyens consacrés aux campagnes de fidélisation.
+- Évaluer les résultats obtenus afin de proposer des actions adaptées.
+
+### Objectif de la semaine
+
+L'objectif collectif est de finaliser et de valider les phases 2 et 3 d'ici le **dimanche 15 novembre 2026**.
+
+Les analyses, les développements et les résultats devront être vérifiés et documentés avant leur intégration dans la branche principale.
 
 ## 7. Organisation du travail et collaboration
 

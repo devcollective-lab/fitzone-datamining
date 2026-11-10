@@ -64,7 +64,11 @@ Trois abonnés présentaient une ancienneté de **-1 mois**, une valeur incohér
 
 Ces trois abonnés appartenaient à la formule Essentiel.
 
-Nous avons donc remplacé leurs anciennetés négatives par la médiane des anciennetés valides des abonnés de cette formule, soit **11 mois**.
+Nous avons choisi de **supprimer ces trois observations du jeu de données**, plutôt que de remplacer leurs anciennetés par une valeur estimée.
+
+Cette décision permet d'éviter d'introduire des anciennetés artificielles dans les analyses, tout en conservant la grande majorité des observations.
+
+Le nombre d'abonnés est ainsi passé de **800 à 797**.
 
 ### 4.5. Prix mensuels nuls
 
@@ -90,7 +94,7 @@ Après les traitements, nous avons effectué une nouvelle vérification du fichi
 
 | Contrôle | Résultat |
 |---|---|
-| Nombre d'abonnés | 800 |
+| Nombre d'abonnés | 797 |
 | Nombre de colonnes | 11 |
 | Doublons restants | 0 |
 | Valeurs manquantes restantes | 0 |
@@ -110,8 +114,10 @@ Les fichiers originaux sont conservés dans `data/raw/` afin de préserver les d
 
 ## 7. Conclusion
 
-Cette première phase a permis d'explorer les deux datasets, de corriger les anomalies identifiées et d'obtenir un jeu de données préparé pour la suite du projet.
+Cette première phase a permis d'explorer les deux datasets, de traiter les anomalies identifiées et d'obtenir un jeu de données préparé pour la suite du projet.
 
-Les décisions de nettoyage ont été prises en tenant compte des caractéristiques des variables, notamment des différences entre les formules d'abonnement.
+Les décisions de nettoyage ont été prises en tenant compte des caractéristiques des variables, notamment des différences entre les formules d'abonnement et de la nécessité d'écarter les observations présentant des anciennetés incohérentes.
+
+Après nettoyage, le fichier des abonnés contient **797 observations exploitables**, sans doublons ni valeurs manquantes.
 
 Les prochaines étapes porteront sur les analyses et les méthodes de Data Mining nécessaires pour répondre aux questions du projet FitZone.
