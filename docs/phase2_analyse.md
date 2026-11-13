@@ -1,4 +1,4 @@
-# Phase 2 — Analyse des résiliations et prédiction des visites
+# Phase 2 — Analyse des comportements et prédiction
 
 ## 1. Objectif
 

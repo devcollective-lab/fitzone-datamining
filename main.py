@@ -1,4 +1,3 @@
-
 from src.data_loader import load_data
 from src.exploration import analyser_resiliations, analyser_distance
 from src.preprocessing import (
@@ -15,13 +14,26 @@ from src.regression import (
     analyser_coefficients,
     optimiser_random_forest
 )
-from src.evaluation import evaluer_regression, evaluer_reference
+from src.evaluation import (
+    evaluer_regression,
+    evaluer_reference,
+    evaluer_classification,
+    evaluer_priorites,
+    simuler_appels
+)
 from src.visualization import (
     visualiser_resiliations_formule,
     visualiser_resiliations_creneau,
     visualiser_resiliations_distance,
     visualiser_predictions,
     visualiser_comparaison_modeles
+)
+from src.classification import (
+    preparer_classification,
+    entrainer_classification,
+    predire_resiliations,
+    predire_probabilites_resiliation,
+    classer_abonnes
 )
 
 
@@ -76,6 +88,40 @@ def main():
         predictions,
         predictions_rf
     )
+
+    print("\n--- Préparation de la classification ---")
+    X_train_clf, X_test_clf, y_train_clf, y_test_clf = preparer_classification(
+        abonnes
+    )
+
+    modele_clf = entrainer_classification(X_train_clf, y_train_clf)
+
+    predictions_clf = predire_resiliations(modele_clf, X_test_clf)
+    evaluer_classification(y_test_clf, predictions_clf)
+
+    probabilites_clf = predire_probabilites_resiliation(
+        modele_clf, X_test_clf
+    )
+
+    print("\n--- Probabilités de résiliation ---")
+    print(probabilites_clf[:10])
+
+    classement = classer_abonnes(X_test_clf, probabilites_clf)
+
+    print("\n--- Abonnés prioritaires ---")
+    print(classement.head(10))
+
+    print("\n--- Comparaison des capacités d'appel ---")
+
+    resiliations_32 = evaluer_priorites(
+        classement, y_test_clf, nombre=32
+    )
+
+    resiliations_64 = evaluer_priorites(
+        classement, y_test_clf, nombre=64
+    )
+
+    simuler_appels(resiliations_32, resiliations_64)
 
 
 if __name__ == "__main__":
