@@ -51,7 +51,8 @@ def traiter_creneau_manquant(abonnes):
 
 
 # Supprimer les abonnés avec une ancienneté négative
-def corriger_anciennetes(abonnes):
+def supprimer_anciennetes_negatives(abonnes):
+    """Supprime les abonnés avec une ancienneté négative."""
     print("\n--- Suppression des anciennetés négatives ---")
 
     nb_avant = len(abonnes)
@@ -89,3 +90,10 @@ def corriger_prix(abonnes):
     print("Prix nuls après :", nb_apres)
 
     return abonnes
+
+def convertir_oui_non(df, colonne):
+    """Convertit une colonne 'oui'/'non' en 1/0."""
+    df[colonne] = df[colonne].map({"oui": 1, "non": 0})
+    nb_problemes = df[colonne].isna().sum()
+    print(f"Colonne '{colonne}' convertie en 1/0 (valeurs non reconnues : {nb_problemes})")
+    return df
