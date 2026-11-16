@@ -8,14 +8,14 @@ FitZone est un projet de Data Mining visant à analyser les comportements des ab
 
 FitZone est une chaîne fictive de 14 salles de sport implantées en Île-de-France, comptant près de 10 000 abonnés.
 
-Au cours de la dernière année, l'entreprise a constaté une augmentation de 30 % des résiliations. Elle souhaite mieux comprendre les facteurs associés à ces départs et optimiser ses actions de fidélisation.
+L'entreprise fait face à un taux de résiliation supérieur à 30 % par an. Elle souhaite mieux comprendre les facteurs associés à ces départs et améliorer ses actions de fidélisation.
 
 L'étude repose sur deux fichiers CSV :
 
 - `FitZone_abonnes.csv` : caractéristiques des abonnés, abonnements, habitudes de fréquentation et résiliations.
 - `FitZone_salles.csv` : caractéristiques des salles de sport.
 
-Ces données ont fait l'objet d'une phase d'exploration et de préparation avant les analyses approfondies.
+Ces données font l'objet d'une préparation avant les différentes analyses.
 
 ## 2. Objectifs
 
@@ -23,15 +23,15 @@ Le projet vise à répondre à plusieurs problématiques :
 
 - Identifier les caractéristiques et comportements associés aux résiliations.
 - Étudier l'influence de la distance entre le domicile et la salle.
-- Prédire la fréquentation mensuelle des abonnés et évaluer la fiabilité des prédictions.
-- Identifier les principaux facteurs qui influencent la fréquentation.
+- Prédire la fréquentation mensuelle des abonnés.
+- Identifier les facteurs qui influencent la fréquentation.
 - Déterminer quels abonnés contacter en priorité pour une campagne de fidélisation.
-- Évaluer l'intérêt d'augmenter les moyens consacrés aux appels.
+- Évaluer l'intérêt d'augmenter la capacité d'appel.
 - Segmenter les abonnés selon leurs caractéristiques et comportements.
 - Analyser l'intérêt économique des différents segments.
-- Détecter les abonnés atypiques et étudier leur impact économique.
+- Détecter les abonnés atypiques.
 
-L'objectif final est de formuler **trois recommandations concrètes, justifiées et chiffrées**.
+L'objectif final est de proposer **trois recommandations commerciales concrètes, justifiées et chiffrées**.
 
 ## 3. Technologies utilisées
 
@@ -62,27 +62,28 @@ fitzone-datamining/
 │   ├── __init__.py
 │   ├── data_loader.py        # Chargement des données
 │   ├── preprocessing.py      # Nettoyage et préparation
-│   ├── exploration.py        # Structure, anomalies, types et unités
-│   ├── classification.py     # Classification
-│   ├── regression.py         # Régression
-│   ├── clustering.py         # Segmentation
-│   └── evaluation.py         # Évaluation des modèles
+│   ├── exploration.py        # Analyse des résiliations et distances
+│   ├── regression.py         # Prédiction de la fréquentation
+│   ├── classification.py     # Prédiction des résiliations
+│   ├── clustering.py         # Segmentation (à venir)
+│   ├── evaluation.py         # Évaluation des modèles
+│   └── visualization.py      # Graphiques
 ├── tests/                    # Tests
 ├── outputs/
 │   ├── figures/              # Graphiques
-│   ├── models/               # Modèles entraînés
-│   └── results/              # Résultats
+│   ├── models/               # Modèles (à venir)
+│   └── results/              # Résultats (à venir)
 ├── docs/
-│   └── phase1_exploration_preprocessing.md
+│   ├── phase1_exploration_preprocessing.md
+│   ├── phase2_analyse.md
+│   └── phase3_analyse.md
 ├── main.py                   # Point d'entrée
 ├── requirements.txt          # Dépendances
 ├── .gitignore
 └── README.md
 ```
 
-Les différents scripts et dossiers seront complétés progressivement.
-
-La documentation détaillée des traitements et des résultats est placée dans `docs/`.
+La documentation des traitements et des résultats est disponible dans `docs/`.
 
 ## 5. Installation et configuration
 
@@ -99,7 +100,7 @@ Il est recommandé d'utiliser **Python 3.13** et un environnement virtuel dédi�
 
 Deux méthodes sont possibles : Conda ou `venv`.
 
-#### Option A — Avec Conda (Windows, macOS et Linux)
+#### Option A — Avec Conda
 
 Créer l'environnement :
 
@@ -136,7 +137,7 @@ py -3.13 -m venv .venv
 .venv\Scripts\activate.bat
 ```
 
-Les commandes supposent que Python 3.13 est déjà installé sur l'ordinateur.
+Ces commandes supposent que Python 3.13 est déjà installé.
 
 ### 5.3. Installer les dépendances
 
@@ -168,15 +169,17 @@ data/raw/
 └── FitZone_salles.csv
 ```
 
-Les fichiers originaux sont conservés sans modification.
+Ces fichiers sont versionnés sur GitHub et conservés sans modification.
 
-Après exécution du programme, les données préparées sont enregistrées automatiquement dans `data/processed/` :
+Après exécution du programme, les données nettoyées sont automatiquement enregistrées dans `data/processed/` :
 
 ```text
 data/processed/
 ├── FitZone_abonnes_clean.csv
 └── FitZone_salles_clean.csv
 ```
+
+Le dossier `data/processed/` est ignoré par Git. Les fichiers nettoyés sont donc générés localement et ne sont pas envoyés sur GitHub.
 
 ### 5.6. Exécuter le projet
 
@@ -186,89 +189,81 @@ Une fois les dépendances installées, lancer le programme depuis la racine du p
 python main.py
 ```
 
-Le programme charge les données, exécute les vérifications d'exploration, applique les traitements de nettoyage et enregistre les fichiers préparés.
+Le programme charge et nettoie les données, analyse les résiliations, entraîne et évalue les modèles de régression et de classification, puis simule la priorisation des appels.
 
 Les résultats sont affichés dans le terminal.
 
+Les données nettoyées sont enregistrées dans `data/processed/` et les graphiques dans `outputs/figures/`.
+
 ## 6. Méthodologie
 
-Le projet est organisé en cinq phases :
+Le projet est organisé en cinq phases, conformément au guide de travail.
 
 | Phase | Description | Statut |
 |---|---|---|
-| 1 | Exploration, vérification, nettoyage et préparation des données | Terminée et validée |
-| 2 | Analyse des résiliations et prédiction de la fréquentation | En préparation |
-| 3 | Fidélisation et priorisation des appels | À venir |
-| 4 | Segmentation des abonnés et détection des anomalies | À venir |
-| 5 | Synthèse des résultats, documentation et présentation | À venir |
+| 1 | Exploration et préparation des données | Terminée |
+| 2 | Analyse des comportements et prédiction | Terminée sur la branche de travail |
+| 3 | Fidélisation et priorisation | Terminée sur la branche de travail |
+| 4 | Segmentation et détection des anomalies | À venir |
+| 5 | Synthèse et finalisation | À venir |
 
 ### Phase 1 — Exploration et préparation des données
 
-**Statut : terminée et validée.**
+**Statut : terminée et intégrée à `main`.**
 
-La phase 1 est terminée et ses développements ont été intégrés à la branche principale `main`.
+Cette phase a permis d'explorer les deux fichiers CSV, d'identifier les anomalies et de nettoyer les données.
 
-Les traitements d'exploration, de nettoyage et de préparation des données sont opérationnels. Les résultats sont documentés et les fichiers nettoyés sont générés automatiquement lors de l'exécution du programme.
+Les principaux traitements concernent les doublons, les valeurs manquantes, les anciennetés négatives et les prix mensuels nuls.
 
-**Travail réalisé :**
+Après nettoyage, nous disposons de **797 abonnés et 14 salles**.
 
-- Exploration de la structure des deux jeux de données.
-- Identification des valeurs manquantes, doublons et incohérences.
-- Vérification des types de données et des unités.
-- Contrôle de la correspondance des salles entre les deux fichiers.
-- Suppression des doublons et traitement des valeurs manquantes.
-- Suppression des abonnés présentant une ancienneté négative et correction des prix mensuels nuls.
-- Vérification finale et sauvegarde des données nettoyées.
+Les traitements sont détaillés dans [la documentation de la phase 1](docs/phase1_exploration_preprocessing.md).
 
-Après nettoyage, le fichier des abonnés contient **797 lignes et 11 colonnes**, sans doublons, sans valeurs manquantes, sans anciennetés négatives et sans prix mensuels nuls.
+### Phase 2 — Analyse des comportements et prédiction
 
-Le fichier des salles contient **14 lignes et 6 colonnes** et n'a nécessité aucune correction.
+**Statut : développement terminé sur la branche de travail.**
 
-**Organisation du code :**
+Cette phase répond aux questions 1 à 4 du projet :
 
-- `src/data_loader.py` : chargement des données.
-- `src/exploration.py` : exploration et recherche des anomalies.
-- `src/preprocessing.py` : nettoyage et préparation des données.
-- `main.py` : exécution des étapes et sauvegarde des résultats.
+- Analyse des résiliations selon les formules, les créneaux et les prix.
+- Étude de l'influence de la distance domicile-salle.
+- Prédiction de la fréquentation mensuelle avec une régression linéaire et un Random Forest.
+- Évaluation et comparaison des modèles.
 
-Les choix de traitement et les résultats sont détaillés dans [la documentation de la phase 1](docs/phase1_exploration_preprocessing.md).
+La régression linéaire obtient un **R² de 0,596** sur le jeu de test, contre **0,514** pour le Random Forest optimisé.
 
-### Phase 2 — Analyse des résiliations et prédiction de la fréquentation
+Les résultats sont détaillés dans [la documentation de la phase 2](docs/phase2_analyse.md).
 
-**Statut : en préparation.**
+### Phase 3 — Fidélisation et priorisation
 
-Cette phase vise à analyser les facteurs associés aux résiliations et à développer des modèles de Machine Learning permettant de prédire la fréquentation mensuelle des abonnés.
+**Statut : développement terminé sur la branche de travail.**
 
-**Travail prévu :**
+Cette phase répond aux questions 5 et 6 du projet.
 
-- Étudier la répartition des résiliations et les caractéristiques des abonnés concernés.
-- Analyser l'influence de la distance entre le domicile et la salle sur les résiliations.
-- Identifier les variables susceptibles d'influencer la fréquentation mensuelle.
-- Préparer les données nécessaires à la modélisation.
-- Entraîner et comparer des modèles de régression.
-- Évaluer les performances des modèles et interpréter les résultats.
-- Documenter les analyses et les choix méthodologiques.
+Une régression logistique a été entraînée pour estimer le risque de résiliation et classer les abonnés à contacter en priorité.
 
-Les développements seront réalisés progressivement sur les branches de travail avant leur validation et leur intégration dans `main`.
+Sur le jeu de test de 160 abonnés :
 
-### Phase 3 — Fidélisation et priorisation des appels
+- **32 abonnés prioritaires** : 15 résiliations identifiées.
+- **64 abonnés prioritaires** : 28 résiliations identifiées.
+
+Ces sélections reproduisent les proportions de 80 et 160 appels parmi 400 abonnés.
+
+Une simulation économique, fondée sur des hypothèses, estime un **gain net mensuel de 72,50 €** pour les 32 appels supplémentaires sur cet échantillon.
+
+Les résultats et les limites sont détaillés dans [la documentation de la phase 3](docs/phase3_analyse.md).
+
+### Phase 4 — Segmentation et détection des anomalies
 
 **Statut : à venir.**
 
-Cette phase sera consacrée à l'identification des abonnés à contacter en priorité dans le cadre des campagnes de fidélisation.
+Cette phase portera sur la segmentation des abonnés, l'analyse économique des différents profils et la détection des abonnés atypiques.
 
-**Travail prévu :**
+### Phase 5 — Synthèse et finalisation
 
-- Identifier les abonnés présentant un risque de résiliation.
-- Définir des critères de priorisation des appels.
-- Étudier l'intérêt d'augmenter les moyens consacrés aux campagnes de fidélisation.
-- Évaluer les résultats obtenus afin de proposer des actions adaptées.
+**Statut : à venir.**
 
-### Objectif de la semaine
-
-L'objectif collectif est de finaliser et de valider les phases 2 et 3 d'ici le **dimanche 15 novembre 2026**.
-
-Les analyses, les développements et les résultats devront être vérifiés et documentés avant leur intégration dans la branche principale.
+Cette dernière phase permettra de vérifier les réponses aux neuf questions, de formuler trois recommandations commerciales chiffrées et de finaliser les livrables du projet.
 
 ## 7. Organisation du travail et collaboration
 
