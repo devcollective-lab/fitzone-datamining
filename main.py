@@ -143,15 +143,53 @@ def modeliser_frequentation(abonnes):
     
 
 def modeliser_resiliation(abonnes):
-    """ Phase 3 : prédiction de la résiliation."""
+    """Phase 3, questions 5 et 6 : risque de résiliation, priorisation des appels
+    et intérêt économique d'un élargissement de l'équipe d'appel."""
+    print("\n===== Questions 5 et 6 : priorisation des appels =====")
 
     X, y = preparer_donnees_classification(abonnes, ["formule", "creneau_habituel", "salle"])
 
     # Évaluation sur un découpage entraînement / test
     X_train, X_test, y_train, y_test = decouper_donnees(X, y, stratify=y)
 
+    modele = entrainer_regression_logistique(X_train, y_train)
+    probas = modele.predict_proba(X_test)[:, 1]
+
+    test = pd.DataFrame({"risque": probas, "a_resilie": y_test.values})
+    test = test.sort_values("risque", ascending=False)
+    print("Résiliés parmi les 32 plus risqués (20 %) :", test.head(32)["a_resilie"].sum())
+    print("Résiliés parmi les 64 plus risqués (40 %) :", test.head(64)["a_resilie"].sum())
+
     resultats = tableau_gains(X,y)
-    print(resultats)
+    prix_resilies = abonnes[abonnes["a_resilie"] == 1]["prix_mensuel_eur"].mean()
+    print(f"Prix mensuel moyen des résiliés : {prix_resilies:.2f} €")
+    comparer_campagnes(resultats, prix_resilies)
+
+
+def prioriser_appels(abonnes):
+    """Phase 3, questions 5 et 6 : risque de résiliation, priorisation des appels
+    et intérêt économique d'un élargissement de l'équipe d'appel."""
+    print("\n===== Questions 5 et 6 : priorisation des appels =====")
+
+    X, y = preparer_donnees_classification(abonnes, ["formule", "creneau_habituel", "salle"])
+
+    # Premier test sur un découpage entraînement / test (stratifié)
+    X_train, X_test, y_train, y_test = decouper_donnees(X, y, stratify=y)
+    modele = entrainer_regression_logistique(X_train, y_train)
+    probas = modele.predict_proba(X_test)[:, 1]
+
+    test = pd.DataFrame({"risque": probas, "a_resilie": y_test.values})
+    test = test.sort_values("risque", ascending=False)
+    print("\n--- Premier test (160 abonnés, 38 résiliés) ---")
+    print("Résiliés parmi les 32 plus risqués (20 %) :", test.head(32)["a_resilie"].sum())
+    print("Résiliés parmi les 64 plus risqués (40 %) :", test.head(64)["a_resilie"].sum())
+
+    # Évaluation robuste : validation croisée sur les 797 abonnés
+    print("\n--- Tableau de gains (validation croisée) ---")
+    resultats = tableau_gains(X, y)
+
+    # Simulation économique : 80 ou 160 appels sur 400 abonnés
+    print("\n--- Simulation économique ---")
     prix_resilies = abonnes[abonnes["a_resilie"] == 1]["prix_mensuel_eur"].mean()
     print(f"Prix mensuel moyen des résiliés : {prix_resilies:.2f} €")
     comparer_campagnes(resultats, prix_resilies)
@@ -160,17 +198,17 @@ def modeliser_resiliation(abonnes):
 
 def main():
     # Phase 1 : à relancer uniquement si les données brutes ou le nettoyage changent
-    # preparer_donnees()
+    preparer_donnees()
 
     abonnes_clean, salles_clean = load_data_clean()
 
     # Chaque analyse travaille sur sa propre copie : les colonnes ajoutées
     # par l'une (tranche_distance, reclamations_groupe) ne gênent pas les autres
-    #analyser_resiliations(abonnes_clean.copy())
-    #analyser_distance(abonnes_clean.copy())
-    #modeliser_frequentation(abonnes_clean.copy())
+    analyser_resiliations(abonnes_clean.copy())
+    analyser_distance(abonnes_clean.copy())
+    modeliser_frequentation(abonnes_clean.copy())
     modeliser_resiliation(abonnes_clean.copy())
-
+    prioriser_appels(abonnes_clean.copy())
 
 if __name__ == "__main__":
     main()
