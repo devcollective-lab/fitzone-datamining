@@ -255,3 +255,24 @@ Le dépôt sera enrichi progressivement au fil de l'avancement du projet.
   - Suppression des lignes comportant des anciennetés négatives (erreurs de saisie).
   - Imputation des prix à 0 € par la médiane de la formule d'abonnement correspondante.
 - **Sortie** : Fichier `data/processed/FitZone_abonnes_propre.csv` généré et prêt pour la Phase 2.
+
+
+
+## Phase 2 — Analyse des comportements et prédiction (Questions 1 à 4)
+
+### Justification des méthodes appliquées
+* **Analyse comparative des résiliations (Q1)** : Analyse descriptive bivariée (calcul des moyennes groupées) pour identifier les variables discriminantes entre abonnés fidèles et résiliés.
+* **Étude de l'impact de la distance (Q2)** : Discrétisation de `distance_domicile_m` en tranches afin d'évaluer l'existence d'un seuil critique sur le taux de résiliation.
+* **Modélisation de la fréquentation (Q3 & Q4)** : Régression linéaire multiple pour estimer l'impact de chaque variable explicative sur `visites_par_mois`.
+* **Évaluation des performances (Q4)** :
+  * **$R^2$** : Proportion de la variance expliquée par le modèle.
+  * **RMSE** : Erreur moyenne exprimée en nombre de visites par mois.
+
+---
+
+## Phase 3 — Fidélisation et priorisation (Questions 5 et 6)
+
+### Justification des méthodes appliquées
+* **Estimation du risque de résiliation (Q5)** : Régression logistique pour attribuer une probabilité continue de départ à chaque abonné.
+* **Priorisation des appels (Q5)** : Classement des 400 abonnés en fin d'engagement pour isoler le Top 80 des profils les plus à risque.
+* **Analyse du rendement marginal (Q6)** : Mesure du risque moyen des 80 abonnés suivants (81 à 160) pour évaluer le gain réel d'un doublement de l'équipe d'appel.
