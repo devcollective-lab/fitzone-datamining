@@ -110,84 +110,88 @@ def verifier_types_unites(abonnes, salles):
     print(distances_km.describe())
 
 
-def comparer_resilies(df, colonnes):
-    """Compare les abonnés résiliés et non résiliés pour les colonnes spécifiées."""
-    for colonne in colonnes:
-        print(f"\n--- Comparaison pour la colonne '{colonne}' ---")
-        print(df.groupby("a_resilie")[colonne].agg(['mean', 'median']))
+# Analyser les résiliations selon les formules et les créneaux
+def analyser_resiliations(abonnes):
+    print("\n--- Analyse des résiliations ---")
 
-def taux_resiliation_par(df, colonnes):
-    """Calcule le taux de résiliation pour les colonnes spécifiées."""
-    for colonne in colonnes:
-        print(f"\n--- Taux de résiliation pour la colonne '{colonne}' ---")
-        print(df.groupby(colonne)["a_resilie"].agg(['mean', 'count']).round(3))
+    total = len(abonnes)
+    resilies = abonnes[abonnes["a_resilie"] == "oui"]
 
-def test_independance_chi2(df, colonne1, colonne2):
-    """Effectue un test d'indépendance du chi2 entre deux colonnes catégorielles."""
-    print(f"\n--- Test d'indépendance du chi2 entre '{colonne1}' et '{colonne2}' ---")
-    tableau = pd.crosstab(df[colonne1], df[colonne2])
-    print(tableau)
-    
-    chi2, p_value, ddl, attendus = chi2_contingency(tableau)
-    print("p-value :", p_value)
+    taux = len(resilies) / total * 100
 
-    if p_value < 0.05: # type: ignore
-        print(f"Il existe une dépendance significative entre '{colonne1}' et '{colonne2}' (p < 0.05).")
-    else :
-        print(f"Il n'existe pas une dépendance significative entre '{colonne1}' et '{colonne2}' (p >= 0.05).")
+    print("\n--- Taux global de résiliation ---")
+    print("Nombre d'abonnés :", total)
+    print("Nombre de résiliations :", len(resilies))
+    print("Taux de résiliation :", round(taux, 2), "%")
 
-def test_mann_whitney(df, colonne):
-    """
-    Compare une colonne numérique entre abonnés résiliés et non résiliés
-    avec un test de Mann-Whitney.
+    print("\n--- Résiliations par formule ---")
 
-    Affiche la médiane de chaque groupe (sens de l'écart), la p-value
-    (fiabilité de l'écart) et une conclusion au seuil de 0,05.
-    """
-    print(f"\n--- Test de Mann-Whitney pour la colonne '{colonne}' ---")
+    for formule in abonnes["formule"].unique():
+        groupe = abonnes[abonnes["formule"] == formule]
+        nb_resilies = (groupe["a_resilie"] == "oui").sum()
+        taux = nb_resilies / len(groupe) * 100
 
-    restes = df[df["a_resilie"] == 0][colonne].dropna()
-    resilies = df[df["a_resilie"] == 1][colonne].dropna()
+        print(formule, ":", round(taux, 2), "%")
 
-    print(f"Médiane des non-résiliés : {restes.median()}")
-    print(f"Médiane des résiliés     : {resilies.median()}")
+    print("\n--- Résiliations par créneau habituel ---")
 
-    resultat = mannwhitneyu(restes, resilies)
-    p_value = resultat.pvalue  # type: ignore
-    print(f"p-value : {p_value:.2e}")
+    for creneau in abonnes["creneau_habituel"].unique():
+        groupe = abonnes[abonnes["creneau_habituel"] == creneau]
+        nb_resilies = (groupe["a_resilie"] == "oui").sum()
+        taux = nb_resilies / len(groupe) * 100
 
-    if p_value < 0.05:
-        print(f"Différence significative entre les deux groupes pour '{colonne}' (p < 0,05).")
-    else:
-        print(f"Aucune différence significative n'a été mise en évidence pour '{colonne}' (p >= 0,05).")
+        print(creneau, ":", round(taux, 2), "%")
 
-def creer_tranches_distance(df):
-    """ Crée une nouvelle colonne 'tranche_distance' dans le DataFrame df """
 
-    bins = [0, 1000, 2000, 3000, 4000, 6000, float('inf')]
-    labels = ["< 1 km", "1-2 km", "2-3 km", "3-4 km", "4-6 km", "6 km et plus"]
+    # Comparer les prix mensuels selon la résiliation
+    print("\n--- Prix mensuel moyen selon la résiliation ---")
 
-    df['tranche_distance'] = pd.cut(
-        df['distance_domicile_m'], 
-        bins=bins, labels=labels, 
-        right=False
-        )
-    return df
+    prix_resilies = abonnes[abonnes["a_resilie"] == "oui"]["prix_mensuel_eur"].mean()
+    prix_non_resilies = abonnes[abonnes["a_resilie"] == "non"]["prix_mensuel_eur"].mean()
 
-def test_kruskal(df, colonne_groupe, colonne_valeur):
-    """ test de kruskal pour comparer les distributions d'une variable continue entre plusieurs groupes """
-    print(f"\n--- Test de Kruskal-Wallis pour la colonne '{colonne_valeur}' par '{colonne_groupe}' ---")
+    print("Prix moyen des abonnés résiliés :", round(prix_resilies, 2), "€")
+    print("Prix moyen des abonnés non résiliés :", round(prix_non_resilies, 2), "€")
 
-    groupes = []
+# Analyser le lien entre la distance et la résiliation
+def analyser_distance(abonnes):
+    print("\n--- Distance et résiliation ---")
 
-    for tranche in df[colonne_groupe].unique():
-        groupes.append(df[df[colonne_groupe] == tranche][colonne_valeur].dropna())
+    resilies = abonnes[abonnes["a_resilie"] == "oui"]
+    non_resilies = abonnes[abonnes["a_resilie"] == "non"]
 
-    stat, p_value = kruskal(*groupes)
-    print(f"Statistique : {stat:.4f}, p-value : {p_value:.4e}")
+    distance_resilies = resilies["distance_domicile_m"].mean() / 1000
+    distance_non_resilies = non_resilies["distance_domicile_m"].mean() / 1000
 
-    if p_value < 0.05:
-        print(f"Différence significative entre les groupes pour '{colonne_valeur}' (p < 0,05).")
-    else:
-        print(f"Aucune différence significative n'a été mise en évidence pour '{colonne_valeur}' (p >= 0,05).")
-    
+    print("\n--- Distance moyenne selon la résiliation ---")
+    print("Abonnés résiliés :", round(distance_resilies, 2), "km")
+    print("Abonnés non résiliés :", round(distance_non_resilies, 2), "km")
+
+    print("\n--- Taux de résiliation par distance ---")
+
+    tranches = [
+        (0, 2000),
+        (2000, 5000),
+        (5000, 10000),
+        (10000, float("inf"))
+    ]
+
+    for minimum, maximum in tranches:
+        groupe = abonnes[
+            (abonnes["distance_domicile_m"] >= minimum) &
+            (abonnes["distance_domicile_m"] < maximum)
+        ]
+
+        if len(groupe) > 0:
+            nb_resilies = (groupe["a_resilie"] == "oui").sum()
+            taux = nb_resilies / len(groupe) * 100
+
+            if maximum == float("inf"):
+                distance = f"{minimum / 1000} km et plus"
+            else:
+                distance = f"{minimum / 1000} à {maximum / 1000} km"
+
+            print(
+                distance, ":",
+                len(groupe), "abonnés,",
+                round(taux, 2), "% de résiliation"
+            )

@@ -1,74 +1,101 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split, KFold, cross_val_score
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score
-from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestRegressor
 
-def preparer_donnees_regression(df, colonnes):
-    """Prépare les données pour la régression en encodant les variables catégorielles et en séparant les variables
-    indépendantes (X) de la variable dépendante (y)."""
 
-    df_encode = pd.get_dummies(df, columns=colonnes, drop_first=True, dtype=int)
-    y = df_encode["visites_par_mois"]
-    X = df_encode.drop(columns=["abonne_id", "visites_par_mois", "a_resilie", "tranche_distance", "reclamations_groupe"],
-    errors="ignore")
+# Préparer les données pour la régression
+def preparer_regression(abonnes):
+    colonnes = [
+        "anciennete_mois",
+        "formule",
+        "prix_mensuel_eur",
+        "distance_domicile_m",
+        "creneau_habituel",
+        "seances_coaching",
+        "reclamations"
+    ]
 
-    return X, y
+    X = abonnes[colonnes]
+    y = abonnes["visites_par_mois"]
 
-def decouper_donnees(X, y, random_state=42, stratify=None):
+    X = pd.get_dummies(
+        X,
+        columns=["formule", "creneau_habituel"],
+        dtype=int
+    )
+
     X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=random_state, stratify=stratify
+        X, y, test_size=0.2, random_state=42
     )
 
     return X_train, X_test, y_train, y_test
 
-def evaluer_baseline(y_train, y_test):
-    """Évalue le modèle de référence : prédit la médiane de y_train pour tous
-    les abonnés du test, et renvoie l'erreur absolue moyenne (MAE)."""
-    prediction = y_train.median()
-    mae = (y_test - prediction).abs().mean()
-    print(f"Baseline (prédiction : {prediction}) - MAE : {mae:.2f}")
-    return mae
 
-
-def evaluer_modele(modele, X, y, nom_jeu):
-    """Évalue un modèle entraîné sur un jeu de données (entraînement ou test)
-    et renvoie l'erreur absolue moyenne (MAE)."""
-    predictions = modele.predict(X)
-    mae = (y - predictions).abs().mean()
-    r2 = r2_score(y, predictions)
-    print(f"MAE sur {nom_jeu} : {mae:.2f}\nR2 score : {r2:.2f}")
-    return mae, r2
-
-
-def entrainer_regression_lineaire(X_train, y_train):
-    """Crée et entraîne une régression linéaire, puis renvoie le modèle entraîné."""
+# Entraîner la régression linéaire
+def entrainer_regression(X_train, y_train):
     modele = LinearRegression()
     modele.fit(X_train, y_train)
+
+    print("\n--- Entraînement de la régression linéaire ---")
+    print("Modèle entraîné avec succès.")
+
     return modele
 
-def validation_croisee(X, y):
-    """Effectue une validation croisée sur les données et renvoie les scores R2 pour chaque pli."""
-    decoupage = KFold(n_splits=5, shuffle=True, random_state=42)
 
-    scores_r2 = cross_val_score(LinearRegression(), X, y, cv=decoupage, scoring="r2")
-    scores_mae = -cross_val_score(LinearRegression(), X, y, cv=decoupage,
-                              scoring="neg_mean_absolute_error")
-    print("\n--- Validation croisée ---")
-    print(f"Scores R2 pour chaque pli : {scores_r2.round(2)}")
-    print(f"Moyenne: {scores_r2.mean():.2f}, écart-type: {scores_r2.std():.2f}")
-    print(f"Scores MAE pour chaque pli : {scores_mae.round(2)}")
-    print(f"Moyenne: {scores_mae.mean():.2f}, écart-type: {scores_mae.std():.2f}")
+# Prédire les visites mensuelles
+def predire_visites(modele, X_test):
+    return modele.predict(X_test)
 
-    return scores_r2, scores_mae
 
-def coefficients_standardises(X, y, colonnes_numeriques):
-    """ Calcule et affiche les coefficients standardisés d'une régression linéaire."""
-    X_std = X.copy()
-    X_std[colonnes_numeriques] = StandardScaler().fit_transform(X[colonnes_numeriques])
+# Afficher les coefficients de la régression linéaire
+def analyser_coefficients(modele, X_train):
+    coefficients = pd.Series(modele.coef_, index=X_train.columns)
 
-    modele_std = LinearRegression()
-    modele_std.fit(X_std, y)
+    print("\n--- Coefficients de la régression ---")
+    print(coefficients.sort_values(ascending=False))
 
-    coefficients_std = pd.Series(modele_std.coef_, index=X_std.columns)
-    print(coefficients_std[colonnes_numeriques].sort_values())
+
+# Entraîner un Random Forest
+def entrainer_random_forest(X_train, y_train):
+    modele = RandomForestRegressor(
+        n_estimators=100,
+        random_state=42
+    )
+
+    modele.fit(X_train, y_train)
+
+    print("\n--- Entraînement du Random Forest ---")
+    print("Modèle entraîné avec succès.")
+
+    return modele
+
+
+# Optimiser le Random Forest par validation croisée
+def optimiser_random_forest(X_train, y_train):
+    modele = RandomForestRegressor(
+        n_estimators=100,
+        random_state=42
+    )
+
+    parametres = {
+        "max_depth": [5, 10, 15],
+        "min_samples_split": [2, 5, 10],
+        "min_samples_leaf": [1, 2, 4]
+    }
+
+    recherche = GridSearchCV(
+        estimator=modele,
+        param_grid=parametres,
+        cv=5,
+        scoring="neg_mean_absolute_error",
+        n_jobs=-1
+    )
+
+    recherche.fit(X_train, y_train)
+
+    print("\n--- Optimisation du Random Forest ---")
+    print("Meilleurs paramètres :", recherche.best_params_)
+    print("Meilleure MAE en validation :", round(-recherche.best_score_, 2))
+
+    return recherche.best_estimator_
