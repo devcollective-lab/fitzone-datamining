@@ -1,5 +1,13 @@
 import pandas as pd
 from src.data_loader import load_data, load_data_clean
+from src.classification import (
+    preparer_donnees_classification,
+    entrainer_regression_logistique,
+    tableau_gains,
+    estimer_resilies_atteints,
+    calculer_gain_net,
+    comparer_campagnes,
+)
 from src.regression import (
     preparer_donnees_regression,
     decouper_donnees,
@@ -93,6 +101,8 @@ def analyser_distance(abonnes):
     taux_resiliation_par(abonnes, ["tranche_distance"])
     test_independance_chi2(abonnes, "tranche_distance", "a_resilie")
     test_kruskal(abonnes, "tranche_distance", "visites_par_mois")
+    print(abonnes.groupby("creneau_habituel")["visites_par_mois"].agg(["mean", "median", "count"]))
+    test_kruskal(abonnes, "creneau_habituel", "visites_par_mois")
 
 
 def modeliser_frequentation(abonnes):
@@ -130,6 +140,22 @@ def modeliser_frequentation(abonnes):
     colonnes_numeriques = ["anciennete_mois", "prix_mensuel_eur", "distance_domicile_m",
                            "seances_coaching", "reclamations"]
     coefficients_standardises(X, y, colonnes_numeriques)
+    
+
+def modeliser_resiliation(abonnes):
+    """ Phase 3 : prédiction de la résiliation."""
+
+    X, y = preparer_donnees_classification(abonnes, ["formule", "creneau_habituel", "salle"])
+
+    # Évaluation sur un découpage entraînement / test
+    X_train, X_test, y_train, y_test = decouper_donnees(X, y, stratify=y)
+
+    resultats = tableau_gains(X,y)
+    print(resultats)
+    prix_resilies = abonnes[abonnes["a_resilie"] == 1]["prix_mensuel_eur"].mean()
+    print(f"Prix mensuel moyen des résiliés : {prix_resilies:.2f} €")
+    comparer_campagnes(resultats, prix_resilies)
+
 
 
 def main():
@@ -140,9 +166,10 @@ def main():
 
     # Chaque analyse travaille sur sa propre copie : les colonnes ajoutées
     # par l'une (tranche_distance, reclamations_groupe) ne gênent pas les autres
-    analyser_resiliations(abonnes_clean.copy())
-    analyser_distance(abonnes_clean.copy())
-    modeliser_frequentation(abonnes_clean.copy())
+    #analyser_resiliations(abonnes_clean.copy())
+    #analyser_distance(abonnes_clean.copy())
+    #modeliser_frequentation(abonnes_clean.copy())
+    modeliser_resiliation(abonnes_clean.copy())
 
 
 if __name__ == "__main__":
