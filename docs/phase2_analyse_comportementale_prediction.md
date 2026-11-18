@@ -328,11 +328,11 @@ Toutes ces lectures s'entendent **toutes choses égales par ailleurs** (les autr
 
 | Rang | Facteur | Coefficient standardisé | Écart habituel (environ) |
 |---|---|---|---|
-| 1 | seances_coaching | +2,49 | 1,2 séance |
-| 2 | anciennete_mois | +0,90 | 22 mois |
-| 3 | distance_domicile_m | −0,84 | 2,1 km |
-| 4 | reclamations | −0,75 | 0,7 réclamation |
-| 5 | prix_mensuel_eur | −0,52 | non interprétable (voir limites) |
+| 1 | seances_coaching | +2,35 | 1,2 séance |
+| 2 | anciennete_mois | +0,82 | 22 mois |
+| 3 | distance_domicile_m | −0,92 | 2,1 km |
+| 4 | reclamations | −0,69 | 0,7 réclamation |
+| 5 | prix_mensuel_eur | −0,58 | non interprétable (voir limites) |
 
 ### Interprétation
 - **Coaching** : c'est le facteur le plus fortement associé à la fréquentation. Ce résultat doit cependant être interprété avec prudence. D'une part, une séance de coaching se déroulant à la salle compte probablement aussi comme une visite, ce qui crée un lien en partie mécanique. D'autre part, le sens du lien n'est pas établi : le coaching pourrait motiver les abonnés à venir plus souvent, mais les abonnés les plus réguliers pourraient aussi être ceux qui choisissent de prendre du coaching.
