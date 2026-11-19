@@ -1,11 +1,19 @@
 from src.data_loader import load_data
+from src.clustering import (
+    choisir_nombres_groupes, 
+    decrire_groupes, 
+    interet_economique,
+    detecter_atypiques,
+    cout_atypiques,
+)
 from src.exploration import analyser_resiliations, analyser_distance
 from src.preprocessing import (
     supprimer_doublons,
     traiter_coaching_manquant,
     traiter_creneau_manquant,
-    corriger_anciennetes,
-    corriger_prix
+    supprimer_anciennetes_negatives,
+    corriger_prix,
+    convertir_oui_non,
 )
 from src.regression import (
     preparer_regression,
@@ -47,8 +55,10 @@ def main():
     abonnes = traiter_creneau_manquant(abonnes)
     abonnes = supprimer_anciennetes_negatives(abonnes)
     abonnes = corriger_prix(abonnes)
+    abonnes = convertir_oui_non(abonnes, "a_resilie")
+    salles = convertir_oui_non(salles, "parking")
 
-    abonnes.to_csv("data/processed/FitZone_abonnes_clean.csv", index=False)
+    """abonnes.to_csv("data/processed/FitZone_abonnes_clean.csv", index=False)
     salles.to_csv("data/processed/FitZone_salles_clean.csv", index=False)
 
     print("\n--- Sauvegarde des données nettoyées ---")
@@ -122,6 +132,21 @@ def main():
     )
 
     simuler_appels(resiliations_32, resiliations_64)
+"""
+    print("--- Choisir le nombres de catégories de clients ---")
+
+    colonnes = ["anciennete_mois", "prix_mensuel_eur", "distance_domicile_m",
+                    "visites_par_mois", "seances_coaching", "reclamations"]
+    choisir_nombres_groupes(abonnes, colonnes)
+
+    # Décrire les groupes de clients
+    abonnes_groupes = decrire_groupes(abonnes, colonnes, k=4)
+    print("\n--- Intérêt économique des groupes de clients ---")
+    interet_economique(abonnes_groupes)
+
+    # Détection des abonnés atypiques
+    abonnes_atyp = detecter_atypiques(abonnes, colonnes)
+    cout_atypiques(abonnes_atyp)
 
 
 if __name__ == "__main__":
