@@ -58,7 +58,7 @@ def main():
     abonnes = convertir_oui_non(abonnes, "a_resilie")
     salles = convertir_oui_non(salles, "parking")
 
-    """abonnes.to_csv("data/processed/FitZone_abonnes_clean.csv", index=False)
+    abonnes.to_csv("data/processed/FitZone_abonnes_clean.csv", index=False)
     salles.to_csv("data/processed/FitZone_salles_clean.csv", index=False)
 
     print("\n--- Sauvegarde des données nettoyées ---")
@@ -132,7 +132,7 @@ def main():
     )
 
     simuler_appels(resiliations_32, resiliations_64)
-"""
+
     print("--- Choisir le nombres de catégories de clients ---")
 
     colonnes = ["anciennete_mois", "prix_mensuel_eur", "distance_domicile_m",
