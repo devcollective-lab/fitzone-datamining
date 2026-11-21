@@ -24,7 +24,7 @@ Le projet vise à répondre à plusieurs problématiques :
 - Identifier les caractéristiques et comportements associés aux résiliations.
 - Étudier l'influence de la distance entre le domicile et la salle.
 - Prédire la fréquentation mensuelle des abonnés.
-- Identifier les facteurs qui influencent la fréquentation.
+- Identifier les facteurs associés à la fréquentation.
 - Déterminer quels abonnés contacter en priorité pour une campagne de fidélisation.
 - Évaluer l'intérêt d'augmenter la capacité d'appel.
 - Segmenter les abonnés selon leurs caractéristiques et comportements.
@@ -43,7 +43,7 @@ Le projet utilise **Python 3.13** et les bibliothèques suivantes :
 | NumPy | Calcul numérique |
 | Matplotlib | Visualisation des données |
 | Seaborn | Visualisation statistique |
-| Scikit-learn | Machine Learning |
+| Scikit-learn | Régression, classification, clustering et détection des anomalies |
 | SciPy | Analyses statistiques |
 | Pytest | Tests du code |
 
@@ -65,25 +65,26 @@ fitzone-datamining/
 │   ├── exploration.py        # Analyse des résiliations et distances
 │   ├── regression.py         # Prédiction de la fréquentation
 │   ├── classification.py     # Prédiction des résiliations
-│   ├── clustering.py         # Segmentation (à venir)
+│   ├── clustering.py         # Segmentation et détection des anomalies
 │   ├── evaluation.py         # Évaluation des modèles
 │   └── visualization.py      # Graphiques
 ├── tests/                    # Tests
 ├── outputs/
 │   ├── figures/              # Graphiques
-│   ├── models/               # Modèles (à venir)
-│   └── results/              # Résultats (à venir)
+│   ├── models/               # Modèles
+│   └── results/              # Résultats
 ├── docs/
 │   ├── phase1_exploration_preprocessing.md
 │   ├── phase2_analyse.md
-│   └── phase3_analyse.md
+│   ├── phase3_analyse.md
+│   └── phase4_analyse.md
 ├── main.py                   # Point d'entrée
 ├── requirements.txt          # Dépendances
 ├── .gitignore
 └── README.md
 ```
 
-La documentation des traitements et des résultats est disponible dans `docs/`.
+La documentation détaillée des traitements et des résultats est disponible dans `docs/`.
 
 ## 5. Installation et configuration
 
@@ -100,37 +101,32 @@ Il est recommandé d'utiliser **Python 3.13** et un environnement virtuel dédi�
 
 Deux méthodes sont possibles : Conda ou `venv`.
 
-#### Option A — Avec Conda
+**Option A — Avec Conda**
 
-Créer l'environnement :
+Créer et activer l'environnement :
 
 ```bash
 conda create -n fitzone-dm python=3.13 -y
-```
-
-L'activer :
-
-```bash
 conda activate fitzone-dm
 ```
 
-#### Option B — Avec venv
+**Option B — Avec venv**
 
-**Sur macOS et Linux :**
+Sur macOS et Linux :
 
 ```bash
 python3.13 -m venv .venv
 source .venv/bin/activate
 ```
 
-**Sur Windows — PowerShell :**
+Sur Windows — PowerShell :
 
 ```powershell
 py -3.13 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
-**Sur Windows — Invite de commandes (CMD) :**
+Sur Windows — Invite de commandes (CMD) :
 
 ```cmd
 py -3.13 -m venv .venv
@@ -189,7 +185,15 @@ Une fois les dépendances installées, lancer le programme depuis la racine du p
 python main.py
 ```
 
-Le programme charge et nettoie les données, analyse les résiliations, entraîne et évalue les modèles de régression et de classification, puis simule la priorisation des appels.
+Le programme exécute les traitements suivants :
+
+- Chargement, nettoyage et sauvegarde des données.
+- Analyse des résiliations et de la distance domicile-salle.
+- Entraînement et évaluation des modèles de régression.
+- Classification des abonnés et priorisation des appels.
+- Segmentation des abonnés avec K-Means.
+- Simulation économique des différents clusters.
+- Détection des abonnés atypiques avec Isolation Forest.
 
 Les résultats sont affichés dans le terminal.
 
@@ -204,7 +208,7 @@ Le projet est organisé en cinq phases, conformément au guide de travail.
 | 1 | Exploration et préparation des données | Terminée |
 | 2 | Analyse des comportements et prédiction | Terminée sur la branche de travail |
 | 3 | Fidélisation et priorisation | Terminée sur la branche de travail |
-| 4 | Segmentation et détection des anomalies | À venir |
+| 4 | Segmentation et détection des anomalies | Terminée sur la branche de travail |
 | 5 | Synthèse et finalisation | À venir |
 
 ### Phase 1 — Exploration et préparation des données
@@ -229,6 +233,8 @@ Cette phase répond aux questions 1 à 4 du projet :
 - Étude de l'influence de la distance domicile-salle.
 - Prédiction de la fréquentation mensuelle avec une régression linéaire et un Random Forest.
 - Évaluation et comparaison des modèles.
+
+Le taux global de résiliation observé est de **23,71 %** sur les 797 abonnés analysés.
 
 La régression linéaire obtient un **R² de 0,596** sur le jeu de test, contre **0,514** pour le Random Forest optimisé.
 
@@ -255,9 +261,26 @@ Les résultats et les limites sont détaillés dans [la documentation de la phas
 
 ### Phase 4 — Segmentation et détection des anomalies
 
-**Statut : à venir.**
+**Statut : développement terminé sur la branche `Tresor_Bch`.**
 
-Cette phase portera sur la segmentation des abonnés, l'analyse économique des différents profils et la détection des abonnés atypiques.
+Cette phase répond aux questions 7 à 9 du projet.
+
+La méthode **K-Means** a permis d'identifier quatre profils d'abonnés :
+
+- Les réguliers de proximité.
+- Les fidèles Premium.
+- Les abonnés avec réclamations.
+- Les abonnés éloignés.
+
+Une simulation économique a ensuite permis de comparer les revenus théoriques, les coûts estimés et les marges des différents groupes.
+
+Les fidèles Premium génèrent les revenus théoriques les plus élevés, tandis que les réguliers de proximité présentent la meilleure marge totale simulée.
+
+Enfin, **Isolation Forest** a identifié **40 abonnés atypiques**, dont **19 présentent une marge individuelle simulée négative**.
+
+Ces résultats reposent en partie sur des hypothèses économiques et ne représentent pas la rentabilité réelle de FitZone.
+
+Les analyses sont détaillées dans [la documentation de la phase 4](docs/phase4_analyse.md).
 
 ### Phase 5 — Synthèse et finalisation
 
