@@ -32,7 +32,6 @@ def visualiser_resiliations_formule(abonnes):
     plt.title("Taux de résiliation par formule")
     plt.xlabel("Formule")
     plt.ylabel("Taux de résiliation (%)")
-    plt.ylim(0, 45)
 
     plt.tight_layout()
     plt.savefig("outputs/figures/resiliations_formule.png")
@@ -69,7 +68,6 @@ def visualiser_resiliations_creneau(abonnes):
     plt.title("Taux de résiliation par créneau habituel")
     plt.xlabel("Créneau habituel")
     plt.ylabel("Taux de résiliation (%)")
-    plt.ylim(0, 40)
 
     plt.tight_layout()
     plt.savefig("outputs/figures/resiliations_creneau.png")
@@ -118,7 +116,6 @@ def visualiser_resiliations_distance(abonnes):
     plt.title("Taux de résiliation selon la distance")
     plt.xlabel("Distance domicile-salle")
     plt.ylabel("Taux de résiliation (%)")
-    plt.ylim(0, 45)
 
     plt.tight_layout()
     plt.savefig("outputs/figures/resiliations_distance.png")
@@ -192,3 +189,33 @@ def visualiser_comparaison_modeles(y_test, predictions_reference,
     plt.close()
 
     print("Graphique enregistré : outputs/figures/comparaison_modeles.png")
+
+
+# Visualiser l'inertie et le score de silhouette
+def tracer_evaluation_clusters(inerties, scores):
+    valeurs_k = range(2, 11)
+
+    plt.figure(figsize=(8, 5))
+    plt.plot(valeurs_k, inerties, marker="o")
+    plt.xlabel("Nombre de clusters (K)")
+    plt.ylabel("Inertie")
+    plt.title("Évolution de l'inertie selon K")
+    plt.xticks(valeurs_k)
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig("outputs/figures/inertie_clusters.png")
+    plt.close()
+
+    plt.figure(figsize=(8, 5))
+    plt.plot(valeurs_k, scores, marker="o")
+    plt.xlabel("Nombre de clusters (K)")
+    plt.ylabel("Score de silhouette")
+    plt.title("Évolution du score de silhouette selon K")
+    plt.xticks(valeurs_k)
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig("outputs/figures/silhouette_clusters.png")
+    plt.close()
+
+    print("Graphique enregistré : outputs/figures/inertie_clusters.png")
+    print("Graphique enregistré : outputs/figures/silhouette_clusters.png")
