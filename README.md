@@ -202,14 +202,14 @@ Le projet est organisé en cinq phases, conformément au guide de travail.
 | Phase | Description | Statut |
 |---|---|---|
 | 1 | Exploration et préparation des données | Terminée |
-| 2 | Analyse des comportements et prédiction | Terminée sur la branche de travail |
-| 3 | Fidélisation et priorisation | Terminée sur la branche de travail |
+| 2 | Analyse des comportements et prédiction | Terminée |
+| 3 | Fidélisation et priorisation | Terminée |
 | 4 | Segmentation et détection des anomalies | À venir |
 | 5 | Synthèse et finalisation | À venir |
 
 ### Phase 1 — Exploration et préparation des données
 
-**Statut : terminée et intégrée à `main`.**
+**Statut : terminée.**
 
 Cette phase a permis d'explorer les deux fichiers CSV, d'identifier les anomalies et de nettoyer les données.
 
@@ -221,7 +221,7 @@ Les traitements sont détaillés dans [la documentation de la phase 1](docs/phas
 
 ### Phase 2 — Analyse des comportements et prédiction
 
-**Statut : développement terminé sur la branche de travail.**
+**Statut : terminée.**
 
 Cette phase répond aux questions 1 à 4 du projet :
 
@@ -236,7 +236,7 @@ Les résultats sont détaillés dans [la documentation de la phase 2](docs/phase
 
 ### Phase 3 — Fidélisation et priorisation
 
-**Statut : développement terminé sur la branche de travail.**
+**Statut : terminée.**
 
 Cette phase répond aux questions 5 et 6 du projet.
 
