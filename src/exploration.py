@@ -1,3 +1,5 @@
+from scipy.stats import chi2_contingency, mannwhitneyu, kruskal
+import pandas as pd
 
 # comprendre les datasets
 def explorer_structure(abonnes, salles):
