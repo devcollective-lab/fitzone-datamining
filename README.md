@@ -24,7 +24,7 @@ Le projet vise à répondre à plusieurs problématiques :
 - Identifier les caractéristiques et comportements associés aux résiliations.
 - Étudier l'influence de la distance entre le domicile et la salle.
 - Prédire la fréquentation mensuelle des abonnés.
-- Identifier les facteurs qui influencent la fréquentation.
+- Identifier les facteurs associés à la fréquentation.
 - Déterminer quels abonnés contacter en priorité pour une campagne de fidélisation.
 - Évaluer l'intérêt d'augmenter la capacité d'appel.
 - Segmenter les abonnés selon leurs caractéristiques et comportements.
@@ -43,7 +43,7 @@ Le projet utilise **Python 3.13** et les bibliothèques suivantes :
 | NumPy | Calcul numérique |
 | Matplotlib | Visualisation des données |
 | Seaborn | Visualisation statistique |
-| Scikit-learn | Machine Learning |
+| Scikit-learn | Régression, classification, clustering et détection des anomalies |
 | SciPy | Analyses statistiques |
 | Pytest | Tests du code |
 
@@ -65,7 +65,7 @@ fitzone-datamining/
 │   ├── exploration.py        # Analyse des résiliations et distances
 │   ├── regression.py         # Prédiction de la fréquentation
 │   ├── classification.py     # Prédiction des résiliations
-│   ├── clustering.py         # Segmentation (à venir)
+│   ├── clustering.py         # Segmentation et détection des anomalies
 │   ├── evaluation.py         # Évaluation des modèles
 │   └── visualization.py      # Graphiques
 ├── tests/                    # Tests
@@ -76,7 +76,8 @@ fitzone-datamining/
 ├── docs/
 │   ├── phase1_exploration_preprocessing.md
 │   ├── phase2_analyse.md
-│   └── phase3_analyse.md
+│   ├── phase3_fidelisation_priorisation.md
+│   └── phase4_segmentation.md
 ├── main.py                   # Point d'entrée
 ├── requirements.txt          # Dépendances
 ├── .gitignore
@@ -189,7 +190,15 @@ Une fois les dépendances installées, lancer le programme depuis la racine du p
 python main.py
 ```
 
-Le programme charge et nettoie les données, analyse les résiliations, entraîne et évalue les modèles de régression et de classification, puis simule la priorisation des appels.
+Les traitements et analyses du projet comprennent :
+
+- Le chargement, le nettoyage et la sauvegarde des données.
+- L'analyse des résiliations et des comportements des abonnés.
+- L'entraînement et l'évaluation des modèles de régression.
+- La prédiction du risque de résiliation et la priorisation des appels.
+- La segmentation des abonnés avec K-Means.
+- L'analyse économique des différents profils.
+- La détection des abonnés atypiques avec Isolation Forest.
 
 Les résultats sont affichés dans le terminal.
 
@@ -204,8 +213,8 @@ Le projet est organisé en cinq phases, conformément au guide de travail.
 | 1 | Exploration et préparation des données | Terminée |
 | 2 | Analyse des comportements et prédiction | Terminée |
 | 3 | Fidélisation et priorisation | Terminée |
-| 4 | Segmentation et détection des anomalies | À venir |
-| 5 | Synthèse et finalisation | À venir |
+| 4 | Segmentation et détection des anomalies | Terminée |
+| 5 | Synthèse et finalisation | En cours |
 
 ### Phase 1 — Exploration et préparation des données
 
@@ -230,6 +239,8 @@ Cette phase répond aux questions 1 à 4 du projet :
 - Prédiction de la fréquentation mensuelle avec une régression linéaire et un Random Forest.
 - Évaluation et comparaison des modèles.
 
+Le taux global de résiliation observé sur les 797 abonnés analysés est de **23,71 %**.
+
 La régression linéaire obtient un **R² de 0,596** sur le jeu de test, contre **0,514** pour le Random Forest optimisé.
 
 Les résultats sont détaillés dans [la documentation de la phase 2](docs/phase2_analyse.md).
@@ -251,19 +262,48 @@ Ces sélections reproduisent les proportions de 80 et 160 appels parmi 400 abonn
 
 Une simulation économique, fondée sur des hypothèses, estime un **gain net mensuel de 72,50 €** pour les 32 appels supplémentaires sur cet échantillon.
 
-Les résultats et les limites sont détaillés dans [la documentation de la phase 3](docs/phase3_analyse.md).
+Les résultats et les limites sont détaillés dans [la documentation de la phase 3](docs/phase3_fidelisation_priorisation.md).
 
 ### Phase 4 — Segmentation et détection des anomalies
 
-**Statut : à venir.**
+**Statut : terminée.**
 
-Cette phase portera sur la segmentation des abonnés, l'analyse économique des différents profils et la détection des abonnés atypiques.
+Cette phase répond aux questions 7 à 9 du projet.
+
+L'algorithme K-Means a été utilisé pour segmenter les abonnés à partir de six variables numériques standardisées. Le choix du nombre de clusters repose sur l'analyse de l'inertie, du score de silhouette et des besoins marketing.
+
+Quatre profils ont été retenus :
+
+| Profil | Effectif | Taux de résiliation |
+|---|---:|---:|
+| Les réguliers de proximité | 307 | 18 % |
+| Les fidèles Premium | 170 | 6 % |
+| Les insatisfaits | 192 | 39 % |
+| Les éloignés | 128 | 38 % |
+
+L'analyse économique des segments montre que les fidèles Premium représentent environ **35 % du chiffre d'affaires mensuel théorique**, tandis que les insatisfaits représentent environ **36 % du manque à gagner associé aux résiliations**.
+
+L'algorithme Isolation Forest a ensuite permis d'identifier **40 abonnés atypiques, dont 35 Premium**, avec une proportion d'atypiques fixée à 5 %.
+
+Ces abonnés se distinguent notamment par une fréquentation élevée, une utilisation importante du coaching et un nombre de réclamations supérieur à celui des autres abonnés.
+
+Une simulation économique, fondée sur l'hypothèse d'un coaching inclus dans l'abonnement Premium et d'un coût de 25 € par séance, met en évidence une marge mensuelle simulée négative pour les Premium atypiques.
+
+En l'absence de données sur les coûts réels, cette simulation ne permet pas de déterminer leur rentabilité effective.
+
+Les résultats, les hypothèses et les limites sont détaillés dans [la documentation de la phase 4](docs/phase4_segmentation.md).
 
 ### Phase 5 — Synthèse et finalisation
 
-**Statut : à venir.**
+**Statut : en cours.**
 
-Cette dernière phase permettra de vérifier les réponses aux neuf questions, de formuler trois recommandations commerciales chiffrées et de finaliser les livrables du projet.
+Cette dernière phase consiste à :
+
+- Vérifier la cohérence des réponses aux neuf questions.
+- Synthétiser les principaux résultats des analyses.
+- Formuler trois recommandations commerciales concrètes, justifiées et chiffrées.
+- Finaliser la documentation et les livrables du projet.
+- Préparer la soutenance.
 
 ## 7. Organisation du travail et collaboration
 
@@ -312,4 +352,4 @@ Les livrables du projet comprennent :
 - Trois recommandations finales argumentées et chiffrées.
 - La documentation et la présentation PDF.
 
-Le dépôt sera enrichi progressivement au fil de l'avancement du projet.
+Le dépôt sera enrichi progressivement jusqu'à la finalisation du projet.
