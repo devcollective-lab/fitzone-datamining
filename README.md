@@ -44,8 +44,7 @@ Le projet utilise **Python 3.13** et les bibliothèques suivantes :
 | Matplotlib | Visualisation des données |
 | Seaborn | Visualisation statistique |
 | Scikit-learn | Régression, classification, clustering et détection des anomalies |
-| SciPy | Analyses statistiques |
-| Pytest | Tests du code |
+| Pytest | Tests automatisés (à venir) |
 
 Le développement repose sur des scripts Python (`.py`), sans notebooks Jupyter.
 
@@ -68,11 +67,9 @@ fitzone-datamining/
 │   ├── clustering.py         # Segmentation et détection des anomalies
 │   ├── evaluation.py         # Évaluation des modèles
 │   └── visualization.py      # Graphiques
-├── tests/                    # Tests
+├── tests/                    # Tests automatisés
 ├── outputs/
-│   ├── figures/              # Graphiques
-│   ├── models/               # Modèles (à venir)
-│   └── results/              # Résultats (à venir)
+│   └── figures/              # Graphiques générés
 ├── docs/
 │   ├── phase1_exploration_preprocessing.md
 │   ├── phase2_analyse.md
@@ -85,6 +82,8 @@ fitzone-datamining/
 ```
 
 La documentation des traitements et des résultats est disponible dans `docs/`.
+
+Le rapport final et la présentation de soutenance seront également ajoutés à ce dossier au format PDF.
 
 ## 5. Installation et configuration
 
@@ -157,7 +156,7 @@ python --version
 Puis :
 
 ```bash
-python -c "import pandas, numpy, sklearn; print('Environnement FitZone OK')"
+python -c "import pandas, numpy, matplotlib, seaborn, sklearn; print('Environnement FitZone OK')"
 ```
 
 ### 5.5. Préparer les données
@@ -180,7 +179,7 @@ data/processed/
 └── FitZone_salles_clean.csv
 ```
 
-Le dossier `data/processed/` est ignoré par Git. Les fichiers nettoyés sont donc générés localement et ne sont pas envoyés sur GitHub.
+Les fichiers nettoyés sont générés localement et exclus du versionnement Git.
 
 ### 5.6. Exécuter le projet
 
@@ -203,6 +202,21 @@ Les traitements et analyses du projet comprennent :
 Les résultats sont affichés dans le terminal.
 
 Les données nettoyées sont enregistrées dans `data/processed/` et les graphiques dans `outputs/figures/`.
+
+Sept graphiques sont générés automatiquement :
+
+```text
+outputs/figures/
+├── comparaison_modeles.png
+├── inertie_clusters.png
+├── predictions_regression.png
+├── resiliations_creneau.png
+├── resiliations_distance.png
+├── resiliations_formule.png
+└── silhouette_clusters.png
+```
+
+Ces graphiques sont générés localement et exclus du versionnement Git.
 
 ## 6. Méthodologie
 
@@ -270,16 +284,20 @@ Les résultats et les limites sont détaillés dans [la documentation de la phas
 
 Cette phase répond aux questions 7 à 9 du projet.
 
-L'algorithme K-Means a été utilisé pour segmenter les abonnés à partir de six variables numériques standardisées. Le choix du nombre de clusters repose sur l'analyse de l'inertie, du score de silhouette et des besoins marketing.
+L'algorithme K-Means a été utilisé pour segmenter les abonnés à partir de six variables numériques standardisées.
+
+Le nombre de clusters a été étudié à partir de l'inertie et du score de silhouette, pour des valeurs de K comprises entre 2 et 10.
+
+Bien que K = 2 obtienne le meilleur score de silhouette, K = 4 a été retenu afin de disposer de profils plus détaillés et exploitables sur le plan marketing.
 
 Quatre profils ont été retenus :
 
 | Profil | Effectif | Taux de résiliation |
 |---|---:|---:|
-| Les réguliers de proximité | 307 | 18 % |
-| Les fidèles Premium | 170 | 6 % |
-| Les insatisfaits | 192 | 39 % |
-| Les éloignés | 128 | 38 % |
+| Les réguliers de proximité | 307 | 18,24 % |
+| Les fidèles Premium | 170 | 5,88 % |
+| Les insatisfaits | 192 | 39,06 % |
+| Les éloignés | 128 | 37,50 % |
 
 L'analyse économique des segments montre que les fidèles Premium représentent environ **35 % du chiffre d'affaires mensuel théorique**, tandis que les insatisfaits représentent environ **36 % du manque à gagner associé aux résiliations**.
 
@@ -287,7 +305,7 @@ L'algorithme Isolation Forest a ensuite permis d'identifier **40 abonnés atypiq
 
 Ces abonnés se distinguent notamment par une fréquentation élevée, une utilisation importante du coaching et un nombre de réclamations supérieur à celui des autres abonnés.
 
-Une simulation économique, fondée sur l'hypothèse d'un coaching inclus dans l'abonnement Premium et d'un coût de 25 € par séance, met en évidence une marge mensuelle simulée négative pour les Premium atypiques.
+Une simulation économique, fondée sur l'hypothèse d'un coaching inclus dans l'abonnement Premium et d'un coût de 25 € par séance, met en évidence une marge mensuelle partielle simulée négative pour les Premium atypiques.
 
 En l'absence de données sur les coûts réels, cette simulation ne permet pas de déterminer leur rentabilité effective.
 
@@ -299,11 +317,21 @@ Les résultats, les hypothèses et les limites sont détaillés dans [la documen
 
 Cette dernière phase consiste à :
 
+- Vérifier et harmoniser le code des différentes phases.
+- Finaliser l'organisation et les dépendances du projet.
+- Vérifier le bon fonctionnement du programme.
+- Mettre en place des tests automatisés.
 - Vérifier la cohérence des réponses aux neuf questions.
 - Synthétiser les principaux résultats des analyses.
 - Formuler trois recommandations commerciales concrètes, justifiées et chiffrées.
 - Finaliser la documentation et les livrables du projet.
 - Préparer la soutenance.
+
+Le code des quatre premières phases a été harmonisé et l'arborescence du projet a été finalisée.
+
+L'exécution complète du programme a été vérifiée dans l'environnement `fitzone-dm`. Les traitements, les modèles et les graphiques sont générés sans erreur lors de cette vérification.
+
+Les tests automatisés, les recommandations finales et les livrables restent en préparation.
 
 ## 7. Organisation du travail et collaboration
 
@@ -349,7 +377,17 @@ Les livrables du projet comprennent :
 - Le code source des traitements et des analyses.
 - Les résultats des explorations et des modèles.
 - Les graphiques et évaluations associés.
+- Les tests automatisés.
 - Trois recommandations finales argumentées et chiffrées.
-- La documentation et la présentation PDF.
+- La documentation des différentes phases.
+- Le rapport final au format PDF.
+- La présentation de soutenance au format PDF.
+
+Les deux livrables PDF seront disponibles dans le dossier `docs/` :
+
+| Document | Fichier prévu | Statut |
+|---|---|---|
+| Rapport final | `docs/FitZone_Rapport.pdf` | En préparation |
+| Présentation de soutenance | `docs/FitZone_Soutenance.pdf` | En préparation |
 
 Le dépôt sera enrichi progressivement jusqu'à la finalisation du projet.
