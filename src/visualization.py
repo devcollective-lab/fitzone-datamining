@@ -192,3 +192,33 @@ def visualiser_comparaison_modeles(y_test, predictions_reference,
     plt.close()
 
     print("Graphique enregistré : outputs/figures/comparaison_modeles.png")
+
+
+# Visualiser l'inertie et le score de silhouette
+def tracer_evaluation_clusters(inerties, scores):
+    valeurs_k = range(2, 11)
+
+    plt.figure(figsize=(8, 5))
+    plt.plot(valeurs_k, inerties, marker="o", color="steelblue")
+    plt.xlabel("Nombre de clusters (K)")
+    plt.ylabel("Inertie")
+    plt.title("Évolution de l'inertie selon K")
+    plt.xticks(valeurs_k)
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig("outputs/figures/inertie_clusters.png")
+    plt.close()
+
+    plt.figure(figsize=(8, 5))
+    plt.plot(valeurs_k, scores, marker="o", color="steelblue")
+    plt.xlabel("Nombre de clusters (K)")
+    plt.ylabel("Score de silhouette")
+    plt.title("Évolution du score de silhouette selon K")
+    plt.xticks(valeurs_k)
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig("outputs/figures/silhouette_clusters.png")
+    plt.close()
+
+    print("Graphique enregistré : outputs/figures/inertie_clusters.png")
+    print("Graphique enregistré : outputs/figures/silhouette_clusters.png")

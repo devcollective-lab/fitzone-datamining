@@ -4,110 +4,291 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.ensemble import IsolationForest
 
-pd.set_option("display.max_columns", None)
-pd.set_option("display.width", 250)
 
-NOMS_GROUPES = {
-    0: "Les réguliers de proximité",
-    1: "Les fidèles Premium",
-    2: "Les insatisfaits",
-    3: "Les éloignés",
-}
+COLONNES_NUMERIQUES = [
+    "anciennete_mois",
+    "prix_mensuel_eur",
+    "distance_domicile_m",
+    "visites_par_mois",
+    "seances_coaching",
+    "reclamations"
+]
 
-def choisir_nombres_groupes(abonnes, colonnes):
-    
-    donnees_std = StandardScaler().fit_transform(abonnes[colonnes])
-    
-    for k in range(2, 9):
-        kmeans = KMeans(n_clusters=k, n_init=10, random_state=42)
-        kmeans.fit(donnees_std)
-        silhouette = silhouette_score(donnees_std, kmeans.labels_)
-        print(f"k = {k} : inertie {kmeans.inertia_:.0f}, silhouette {silhouette:.3f}")
+COUT_SEANCE_COACHING = 25
 
-def decrire_groupes(abonnes, colonnes, k):
-    """Forme k groupes d'abonnés avec KMeans, affiche le profil moyen de chaque
-    groupe et sa répartition par formule, puis renvoie une copie des abonnés
-    avec une colonne 'groupe'."""
-    donnees_std = StandardScaler().fit_transform(abonnes[colonnes])
 
-    kmeans = KMeans(n_clusters=k, n_init=10, random_state=42)
-    kmeans.fit(donnees_std)
+# Sélectionner et standardiser les variables de segmentation
+def preparer_donnees_clustering(abonnes):
+    X = abonnes[COLONNES_NUMERIQUES].copy()
 
-    abonnes_groupes = abonnes.copy()
-    abonnes_groupes["groupe"] = kmeans.labels_
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
 
-    resume = abonnes_groupes.groupby("groupe")[colonnes + ["a_resilie"]].mean().round(2)
-    resume["effectif"] = abonnes_groupes.groupby("groupe").size()
+    return X_scaled
 
-    print(f"--- Profil des groupes pour k = {k} ---")
-    print(resume)
 
-    print("\n--- Répartition des groupes par formule ---")
-    print(pd.crosstab(abonnes_groupes["groupe"], abonnes_groupes["formule"]))
+# Calculer l'inertie pour plusieurs nombres de clusters
+def calculer_inerties(X_scaled):
+    inerties = []
 
-    return abonnes_groupes
+    for k in range(2, 11):
+        modele = KMeans(n_clusters=k, random_state=42, n_init=10)
+        modele.fit(X_scaled)
 
-def interet_economique(abonnes_groupes, noms=NOMS_GROUPES):
-    """Calcule, pour chaque groupe d'abonnés, le chiffre d'affaires mensuel,
-    le chiffre d'affaires perdu par les résiliations et leur part dans le total."""
-    df = abonnes_groupes.copy()
-    df["ca_perdu"] = df["prix_mensuel_eur"] * df["a_resilie"]
+        inerties.append(modele.inertia_)
 
-    tableau = df.groupby("groupe").agg(
-        effectif=("prix_mensuel_eur", "size"),
-        prix_moyen=("prix_mensuel_eur", "mean"),
-        taux_resiliation=("a_resilie", "mean"),
-        ca_mensuel=("prix_mensuel_eur", "sum"),
-        ca_perdu=("ca_perdu", "sum"),
+    return inerties
+
+
+# Évaluer la qualité des clusters pour plusieurs valeurs de K
+def calculer_silhouettes(X_scaled):
+    scores = []
+
+    for k in range(2, 11):
+        modele = KMeans(n_clusters=k, random_state=42, n_init=10)
+        labels = modele.fit_predict(X_scaled)
+
+        score = silhouette_score(X_scaled, labels)
+        scores.append(score)
+
+    return scores
+
+
+# Regrouper les abonnés avec K-Means
+def creer_clusters(X_scaled, k):
+    modele = KMeans(n_clusters=k, random_state=42, n_init=10)
+    clusters = modele.fit_predict(X_scaled)
+
+    return clusters
+
+
+# Associer les noms marketing aux caractéristiques des clusters
+def identifier_profils_clusters(abonnes_clusters):
+    caracteristiques = abonnes_clusters.groupby("cluster").agg(
+        part_premium=("formule", lambda valeurs: (valeurs == "Premium").mean()),
+        reclamations=("reclamations", "mean"),
+        distance=("distance_domicile_m", "mean")
     )
-    tableau["part_ca"] = tableau["ca_mensuel"] / tableau["ca_mensuel"].sum()
-    tableau["part_pertes"] = tableau["ca_perdu"] / tableau["ca_perdu"].sum()
-    tableau.index = tableau.index.map(noms)
 
-    print(tableau.round(2))
-    return tableau
+    cluster_premium = caracteristiques["part_premium"].idxmax()
+    restants = caracteristiques.drop(index=cluster_premium)
 
-def detecter_atypiques(abonnes, colonnes, part_atypiques=0.05):
-    """Repère les abonnés atypiques avec une Isolation Forest, puis compare
-    leur profil moyen à celui des autres abonnés. Renvoie une copie des abonnés
-    avec une colonne 'atypique' (True / False)."""
-    donnees_std = StandardScaler().fit_transform(abonnes[colonnes])
+    cluster_insatisfaits = restants["reclamations"].idxmax()
+    restants = restants.drop(index=cluster_insatisfaits)
 
-    modele = IsolationForest(contamination=part_atypiques, random_state=42)
-    modele.fit(donnees_std)
+    cluster_eloignes = restants["distance"].idxmax()
+    cluster_reguliers = restants.drop(index=cluster_eloignes).index[0]
 
-    abonnes_atyp = abonnes.copy()
-    abonnes_atyp["atypique"] = modele.predict(donnees_std) == -1
+    return {
+        cluster_reguliers: "Réguliers de proximité",
+        cluster_premium: "Fidèles Premium",
+        cluster_insatisfaits: "Insatisfaits",
+        cluster_eloignes: "Éloignés"
+    }
 
-    profil = abonnes_atyp.groupby("atypique")[colonnes + ["a_resilie"]].mean().round(2)
-    profil["effectif"] = abonnes_atyp.groupby("atypique").size()
-    print("--- Profil des abonnés atypiques (True) et des autres (False) ---")
-    print(profil)
 
-    print("\n--- Répartition des atypiques par formule ---")
-    print(abonnes_atyp[abonnes_atyp["atypique"]]["formule"].value_counts())
+# Décrire les caractéristiques et la résiliation des clusters
+def analyser_profils_clusters(abonnes_clusters):
+    profils = abonnes_clusters.groupby("cluster")[COLONNES_NUMERIQUES].mean()
+    profils["effectif"] = abonnes_clusters.groupby("cluster").size()
+    profils["taux_resiliation"] = (
+        abonnes_clusters.groupby("cluster")["a_resilie"]
+        .apply(lambda valeurs: (valeurs == "oui").mean() * 100)
+    )
 
-    return abonnes_atyp
+    noms_profils = identifier_profils_clusters(abonnes_clusters)
+    profils.insert(0, "profil", profils.index.map(noms_profils))
 
-def cout_atypiques(abonnes_atyp, cout_seance=25):
-    """Estime la marge mensuelle des abonnés (prix - coût du coaching),
-    en supposant le coaching inclus dans l'abonnement, et compare les
-    atypiques aux autres abonnés."""
-    df = abonnes_atyp.copy()
-    df["marge"] = df["prix_mensuel_eur"] - df["seances_coaching"] * cout_seance
+    return profils.round(2)
 
-    bilan = df.groupby(["formule", "atypique"]).agg(
-        effectif=("marge", "size"),
+
+# Calculer la répartition des formules par profil
+def analyser_formules_clusters(abonnes_clusters):
+    repartition = pd.crosstab(
+        abonnes_clusters["cluster"],
+        abonnes_clusters["formule"],
+        normalize="index"
+    ) * 100
+
+    noms_profils = identifier_profils_clusters(abonnes_clusters)
+    repartition.index = repartition.index.map(noms_profils)
+    repartition.index.name = "profil"
+
+    return repartition.round(2)
+
+
+# Calculer les indicateurs économiques par profil
+def analyser_revenus_clusters(abonnes_clusters):
+    donnees = abonnes_clusters.copy()
+    donnees["est_resilie"] = donnees["a_resilie"] == "oui"
+    donnees["ca_perdu"] = donnees["prix_mensuel_eur"].where(
+        donnees["est_resilie"], 0
+    )
+
+    revenus = donnees.groupby("cluster").agg(
+        effectif=("cluster", "size"),
+        prix_mensuel_moyen=("prix_mensuel_eur", "mean"),
+        nombre_resiliations=("est_resilie", "sum"),
+        ca_mensuel_theorique=("prix_mensuel_eur", "sum"),
+        ca_mensuel_perdu=("ca_perdu", "sum")
+    )
+
+    revenus["taux_resiliation"] = (
+        revenus["nombre_resiliations"] / revenus["effectif"] * 100
+    )
+    revenus["part_ca"] = (
+        revenus["ca_mensuel_theorique"]
+        / revenus["ca_mensuel_theorique"].sum()
+        * 100
+    )
+    revenus["part_pertes"] = (
+        revenus["ca_mensuel_perdu"]
+        / revenus["ca_mensuel_perdu"].sum()
+        * 100
+    )
+
+    revenus = revenus.drop(columns="nombre_resiliations")
+    revenus = revenus[[
+        "effectif",
+        "prix_mensuel_moyen",
+        "taux_resiliation",
+        "ca_mensuel_theorique",
+        "part_ca",
+        "ca_mensuel_perdu",
+        "part_pertes"
+    ]]
+
+    noms_profils = identifier_profils_clusters(abonnes_clusters)
+    revenus.index = revenus.index.map(noms_profils)
+    revenus.index.name = "profil"
+
+    return revenus.round(2)
+
+
+# Calculer l'utilisation mensuelle des services par profil
+def analyser_utilisation_clusters(abonnes_clusters):
+    utilisation = abonnes_clusters.groupby("cluster")[[
+        "visites_par_mois",
+        "seances_coaching"
+    ]].agg(["sum", "mean"])
+
+    noms_profils = identifier_profils_clusters(abonnes_clusters)
+    utilisation.index = utilisation.index.map(noms_profils)
+    utilisation.index.name = "profil"
+
+    return utilisation.round(2)
+
+
+# Identifier les abonnés atypiques
+def detecter_anomalies(X_scaled):
+    modele = IsolationForest(
+        contamination=0.05,
+        random_state=42
+    )
+
+    anomalies = modele.fit_predict(X_scaled)
+
+    return anomalies
+
+
+# Comparer les caractéristiques des abonnés atypiques et des autres abonnés
+def analyser_profils_anomalies(abonnes_anomalies):
+    profils = abonnes_anomalies.groupby("anomalie")[
+        COLONNES_NUMERIQUES
+    ].mean()
+    profils["effectif"] = abonnes_anomalies.groupby("anomalie").size()
+    profils["taux_resiliation"] = (
+        abonnes_anomalies.groupby("anomalie")["a_resilie"]
+        .apply(lambda valeurs: (valeurs == "oui").mean() * 100)
+    )
+
+    profils.index = profils.index.map({-1: "Atypiques", 1: "Autres"})
+    profils.index.name = "profil"
+
+    return profils.round(2)
+
+
+# Comparer les formules des abonnés atypiques et des autres abonnés
+def analyser_formules_anomalies(abonnes_anomalies):
+    formules = pd.crosstab(
+        abonnes_anomalies["anomalie"],
+        abonnes_anomalies["formule"]
+    )
+
+    formules.index = formules.index.map({-1: "Atypiques", 1: "Autres"})
+    formules.index.name = "profil"
+
+    return formules
+
+
+# Comparer les abonnés Premium atypiques aux autres Premium
+def analyser_premium_anomalies(abonnes_anomalies):
+    premium = abonnes_anomalies[
+        abonnes_anomalies["formule"] == "Premium"
+    ]
+
+    profils = premium.groupby("anomalie")[COLONNES_NUMERIQUES].mean()
+    profils["effectif"] = premium.groupby("anomalie").size()
+    profils["taux_resiliation"] = (
+        premium.groupby("anomalie")["a_resilie"]
+        .apply(lambda valeurs: (valeurs == "oui").mean() * 100)
+    )
+
+    profils.index = profils.index.map({-1: "Atypiques", 1: "Autres"})
+    profils.index.name = "Premium"
+
+    return profils.round(2)
+
+
+# Simuler la marge partielle des abonnés Premium
+def analyser_rentabilite_anomalies(
+    abonnes_anomalies,
+    cout_seance=COUT_SEANCE_COACHING
+):
+    premium = abonnes_anomalies[
+        abonnes_anomalies["formule"] == "Premium"
+    ].copy()
+
+    premium["marge_simulee"] = (
+        premium["prix_mensuel_eur"]
+        - premium["seances_coaching"] * cout_seance
+    )
+
+    resultats = premium.groupby("anomalie").agg(
+        effectif=("anomalie", "size"),
         prix_moyen=("prix_mensuel_eur", "mean"),
         coaching_moyen=("seances_coaching", "mean"),
-        marge_moyenne=("marge", "mean"),
-        marge_totale=("marge", "sum"),
+        marge_moyenne_simulee=("marge_simulee", "mean"),
+        marge_totale_simulee=("marge_simulee", "sum")
     )
-    print(f"--- Marge mensuelle (coût d'une séance : {cout_seance} €) ---")
-    print(bilan.round(2))
 
-    atypiques = df[df["atypique"]]
-    seuil = atypiques["prix_mensuel_eur"].sum() / atypiques["seances_coaching"].sum()
-    print(f"\nMarge totale des atypiques : {atypiques['marge'].sum():.0f} € par mois")
-    print(f"Les atypiques deviennent déficitaires au-delà de {seuil:.2f} € par séance")
-    return bilan
+    resultats.index = resultats.index.map({-1: "Atypiques", 1: "Autres"})
+    resultats.index.name = "Premium"
+
+    return resultats.round(2)
+
+
+# Simuler le scénario élargi à tous les abonnés atypiques
+def simuler_scenario_atypiques(
+    abonnes_anomalies,
+    cout_seance=COUT_SEANCE_COACHING
+):
+    atypiques = abonnes_anomalies[
+        abonnes_anomalies["anomalie"] == -1
+    ].copy()
+
+    atypiques["marge_simulee"] = (
+        atypiques["prix_mensuel_eur"]
+        - atypiques["seances_coaching"] * cout_seance
+    )
+
+    seuil_equilibre = (
+        atypiques["prix_mensuel_eur"].sum()
+        / atypiques["seances_coaching"].sum()
+    )
+
+    return pd.Series({
+        "effectif": len(atypiques),
+        "marge_totale_simulee": atypiques["marge_simulee"].sum(),
+        "seuil_equilibre_cout_seance": seuil_equilibre
+    }).round(2)

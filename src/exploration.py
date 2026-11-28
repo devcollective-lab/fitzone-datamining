@@ -1,7 +1,4 @@
-from scipy.stats import chi2_contingency, mannwhitneyu, kruskal
-import pandas as pd
-
-# comprendre les datasets
+# Explorer la structure des données
 def explorer_structure(abonnes, salles):
     print("Dimensions des abonnés :", abonnes.shape)
     print("Dimensions des salles :", salles.shape)
@@ -24,7 +21,8 @@ def explorer_structure(abonnes, salles):
     print("\n--- Informations sur les salles ---")
     salles.info()
 
-# Valeurs manquantes, doublons et incohérences
+
+# Vérifier les valeurs manquantes, les doublons et les incohérences
 def verifier_anomalies(abonnes, salles):
     print("\n--- Valeurs manquantes des abonnés ---")
     print(abonnes.isna().sum())
@@ -87,7 +85,7 @@ def verifier_anomalies(abonnes, salles):
     print(salles.describe())
 
 
-# Les types de données et les unités
+# Vérifier les types de données et les unités
 def verifier_types_unites(abonnes, salles):
     print("\n--- Types des colonnes des abonnés ---")
     print(abonnes.dtypes)
@@ -142,7 +140,6 @@ def analyser_resiliations(abonnes):
 
         print(creneau, ":", round(taux, 2), "%")
 
-
     # Comparer les prix mensuels selon la résiliation
     print("\n--- Prix mensuel moyen selon la résiliation ---")
 
@@ -151,6 +148,7 @@ def analyser_resiliations(abonnes):
 
     print("Prix moyen des abonnés résiliés :", round(prix_resilies, 2), "€")
     print("Prix moyen des abonnés non résiliés :", round(prix_non_resilies, 2), "€")
+
 
 # Analyser le lien entre la distance et la résiliation
 def analyser_distance(abonnes):
